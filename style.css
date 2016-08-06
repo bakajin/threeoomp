@@ -149,7 +149,7 @@ input,
 select,
 textarea {
 	color: #404040;
-	font-family: sans-serif;
+	font-family: 'Source Sans Pro', sans-serif;
 	font-size: 16px;
 	font-size: 1.6rem;
 	line-height: 1.5;
@@ -190,7 +190,7 @@ address {
 
 pre {
 	background: #eee;
-	font-family: "Courier 10 Pitch", Courier, monospace;
+	font-family: 'Source Code Pro', monospace;
 	font-size: 15px;
 	font-size: 1.5rem;
 	line-height: 1.6;
@@ -247,11 +247,50 @@ big {
 /*--------------------------------------------------------------
 3.0 Elements
 --------------------------------------------------------------*/
+header.site-header {
+	height : 0;
+	overflow-y : visible;
+}
+
+div.site-branding {
+	position: absolute;
+	left : 39%;
+	top : 8%;
+}
+
+div.site-branding h1 a{
+		font-size: 141%;
+		font-weight : 300;
+		text-decoration: none;
+		color : #31332F;
+}	
+
+div.site-branding h2{
+	font-size: 131%;
+	font-weight : 500;
+	text-decoration: none;
+	color : #31332F;
+}
+
 div#canvas3d {
 	position: fixed;
 	z-index: -1;
 	width : 100%;
 	height : 100%;
+}
+
+header.entry-header h1 {
+	font-size: 121%;
+	font-weight : 300;
+	text-decoration: none;
+	color : #31332F;
+
+}
+
+div.entry-content p {
+	font-size: 100%;
+	font-weight : 400;
+	color : #61665E;
 }
 
 hr {
@@ -437,6 +476,123 @@ a:active {
 /*--------------------------------------------------------------
 5.2 Menus
 --------------------------------------------------------------*/
+/* svg-menu styles */
+#svg-menu {
+	width : 33%;
+	position: fixed;
+	right : -6em;
+}
+
+.menu-button-cls-1, .menu-button-cls-3 {
+	fill: #d4c978;
+}
+
+.menu-button-cls-1 {
+	stroke: #fff;
+	opacity: 0.6;
+}
+
+.menu-button-cls-1, .menu-button-cls-2 {
+	stroke-miterlimit: 10;
+	stroke-width: 0.5px;
+}
+
+.menu-button-cls-2 {
+	fill: #fff;
+	stroke: #d4c978;
+}
+
+.main-button-cls-1, .main-button-cls-3 {
+	fill: #d78081;
+}
+
+.main-button-cls-1 {
+	stroke: #fff;
+	opacity: 0.6;
+}
+
+.main-button-cls-1, .main-button-cls-2 {
+	stroke-miterlimit: 10;
+	stroke-width: 0.5px;
+}
+
+.main-button-cls-2 {
+	fill: #fff;
+	stroke: #d78081;
+}
+
+.main-button-cls-4, .main-button-cls-5 {
+	font-size: 24px;
+	font-family: SourceCodePro-Semibold, Source Code Pro;
+	font-weight: 700;
+}
+
+.main-button-cls-4 {
+	fill: #331f1f;
+}
+
+.main-button-cls-5 {
+	fill: #736161;
+}
+
+.sub-button-cls-1, .sub-button-cls-2 {
+	fill: #d78081;
+	stroke: #fff;
+	stroke-miterlimit: 10;
+	stroke-width: 0.5px;
+}
+
+.sub-button-cls-1 {
+	opacity: 0.6;
+}
+
+.sub-button-cls-3 {
+	fill: #fff;
+}
+
+.sub-button-cls-4 {
+	font-size: 18px;
+	fill: #736161;
+	font-family: SourceCodePro-Semibold, Source Code Pro;
+	font-weight: 700;
+}
+
+.view-button-cls-1 {
+	opacity: 0.6;
+}
+
+.view-button-cls-2, .view-button-cls-4 {
+	fill: #d78081;
+}
+
+.view-button-cls-2 {
+	stroke: #fff;
+}
+
+.view-button-cls-2, .view-button-cls-3 {
+	stroke-miterlimit: 10;
+	stroke-width: 0.5px;
+}
+
+.view-button-cls-3 {
+	fill: #fff;
+	stroke: #d78081;
+}
+
+.view-button-cls-5, .view-button-cls-6 {
+	font-size: 24px;
+	font-family: SourceCodePro-Semibold, Source Code Pro;
+	font-weight: 700;
+}
+
+.view-button-cls-5 {
+	fill: #331f1f;
+}
+
+.view-button-cls-6 {
+	fill: #736161;
+}
+
 .main-navigation {
 	clear: both;
 	display: block;
@@ -652,7 +808,19 @@ a:active {
 }
 
 .hentry {
-	margin: 0 0 1.5em;
+	margin : 0 13%; /* 0 0 1.5em */
+
+}
+
+div#content div#primary {
+	/* turning off widgets and comments */
+	padding-top: 15%;
+}
+
+body.blog div#content div#secondary {
+	/* turning off widgets and comments */
+
+	display: none;
 }
 
 .byline,

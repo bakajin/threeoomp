@@ -13,34 +13,52 @@ var balloonGeometry, balloonMaterial, balloonMesh;
 
 var view;
 
+//snap svg for the menu
+var paper;
+
 /* global function calls */
 function render() {
 	init();
+	menu("load");
+
 	animate();	
 }
 
 
 function init() {
-	console.log("init");
-	view = document.getElementById('canvas3d');
+		console.log("init");
+		view = document.getElementById('canvas3d');
 
-	scene = new THREE.Scene();
+		
+		scene = new THREE.Scene();
+		scene.background = 0xffffff;
+		//Fog( hex, near, far )
+		scene.fog = new THREE.Fog( 0xffffff, 1, 150);
+		//scene.fog = new THREE.Fog( 0xd4c978, 1, 150);
 
 	//hemisphereLight = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
 		//scene.add( hemisphereLight );
-		ambientLight = new THREE.AmbientLight( 0xcccccc );
-		directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
+		ambientLight = new THREE.AmbientLight( 0x000000 );
+		directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
 		directionalLight.position.set( 0, 1, 0 );
 		
 		scene.add( directionalLight );
 		scene.add( ambientLight );
 
+		// field of view, aspect ratio, near plane, far plane 
+		camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 150);
+	
+		camera.position.x = 0;
+		camera.position.y = 100;
+		camera.position.z = 0;
+		
+
 	//set up manager
 	var manager = new THREE.LoadingManager();
 		manager.onProgress = function( item, loaded, total ) {
-			console.log( item, laoded, total );
+			console.log( item, loaded, total );
 		};
-
+	// event listeners
 	var onProgress = function ( xhr ) {
 		if (xhr.lengthComputable) {
 			var percentComplete = xhr.loaded / xhr.total * 100;
@@ -52,41 +70,63 @@ function init() {
 
 	};
 
-	// model
+	// insert loading of texture here if needed
 
-				var loader = new THREE.OBJLoader( manager );
-				loader.load( themePath + '/assets/three_bg-tri-grid.obj', function ( object ) {
+	// model background
+	var bgLoader = new THREE.OBJLoader( manager );
+				bgLoader.load( themePath + '/assets/three_bg-tri-grid.obj', function ( object ) {
 
 					object.traverse( function ( child ) {
 
 						if ( child instanceof THREE.Mesh ) {
 
-							child.material = new THREE.MeshPhongMaterial( { color: 0xffffbb } );
+							child.material = new THREE.MeshPhongMaterial( { color: 0xffffff, emissive : 0x000000, specular: 0x111111, shininess: 24, shading: THREE.FlatShading} ); // specularMap, aoMap, (normalMap)
+
+						}//color: 0xffffff, emissive : 0x66655e, specular: 0xd4c978, shininess: 42, shading: THREE.FlatShading
+
+					} );
+
+				/*
+					object.position.y = - 95;
+					object.rotation.y = 90;
+					object.scale.x = 10;
+					object.scale.y = 10;
+					object.scale.z = 10;
+				*/
+					scene.add( object );
+					
+					camera.lookAt(object.position);
+
+				}, onProgress, onError );
+
+	// model balloon
+	 var balloonLoader = new THREE.OBJLoader( manager );
+				balloonLoader.load( themePath + '/assets/three_mylar-balloon.obj', function ( object ) {
+
+					object.traverse( function ( child ) {
+
+						if ( child instanceof THREE.Mesh ) {
+
+							child.material = new THREE.MeshStandardMaterial( { color: 0xd78081 } ); // roughness, metalness, specularMap, normalMap, (normalScale), envMap, reflectivity, combine
 
 						}
 
 					} );
 
-					//object.position.y = - 95;
+					object.position.z = 20;
+				/*
+					object.position.y = - 95;
+					object.rotation.y = 90;
 					object.scale.x = 10;
 					object.scale.y = 10;
 					object.scale.z = 10;
-
+				*/
 					scene.add( object );
+					
 
 				}, onProgress, onError );
 
-	// field of view, aspect ratio, near plane, far plane 
-	camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1000);
-	camera.position.z = 1000;
 
-	//backgroundAsset("/assets/three_bg-tri-grid.obj"); 
-	//load obj asset files
-	//geometry = new THREE.BoxGeometry( 200, 200, 200 ); 
-	//var mat = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } ); //fix shader
-
-	//mesh = new THREE.Mesh( geometry, mat );
-	//scene.add( mesh );
 
 	renderer = new THREE.WebGLRenderer();
 	renderer.setSize( window.innerWidth, window.innerHeight );
@@ -190,6 +230,57 @@ function balloon() {
 
 }
 
-function menu() {
+function menu(phase) {
+		//select the menu container in the menu on header.php
+		paper = Snap("#svg-menu");
+		paper.attr({ viewBox : "0 0 565 500" });
+		//
+		switch(phase) {
+			case "load":
+					var assetList = { menu : "menu-button", main : "main-button", sub : "sub-button", view : "view-button" };
+					
+					for(ass in assetList) {
+					//console.log("	assets: ", themePath + ass + ".svg");
+							
+					//lets start loading assets
+								Snap.load(themePath + "/assets/" + assetList[ass] + ".svg", svgLoadEvent);
+					
+					}
+			break;
+			default:
+
+			break;
+		}
+		
+
+}
+
+function svgLoadEvent(event) {
+			
+
+			paper = Snap("#svg-menu");
+
+		var g = event.select("g");
+			console.log("snap svg load: ", event, g.attr("id") );
+			switch(g.attr("id")) {
+				case "menu-button-group":
+							g.transform("t250,25");
+							
+				break;
+				case "main-button-group":
+							var posArray = [];
+
+							for(b = 0; b < menuItems.length; b++) { 
+							console.log(menuItems[b].idx, menuItems[b].parent, menuItems[b].title, menuItems[b].url, menuItems[b].guid);
+						}
+				break;
+				case "sub-button-group":
+
+				break;
+				case "view-button-group":
+
+				break;
+			}
+			paper.append(g);
 
 }

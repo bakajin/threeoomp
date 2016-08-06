@@ -112,8 +112,13 @@ function oompthree_custom_scripts() {
 	wp_register_script('three-js', get_template_directory_uri() . '/js/three.min.js');
 	wp_enqueue_script('three-js');
 
+	// loader script for threejs obj
 	wp_register_script('loader-obj', get_template_directory_uri() . '/js/loaders/OBJLoader.js');
 	wp_enqueue_script('loader-obj');
+	
+	// snap svg for rendering the menu
+	wp_register_script('snap-svg', get_template_directory_uri() . '/js/snap.svg-min.js');
+	wp_enqueue_script('snap-svg');
 
 	//register a master functionfile, lets do it all in one file
 	wp_register_script('oompthree-ui', get_template_directory_uri() . '/js/oompthree-ui.js');
