@@ -256,6 +256,7 @@ div.site-branding {
 	position: absolute;
 	left : 39%;
 	top : 8%;
+	line-height: 1.33em;
 }
 
 div.site-branding h1 a{
@@ -343,6 +344,9 @@ table {
 
 th {
 	font-weight: bold;
+}
+footer.site-footer {
+	text-align: center;
 }
 
 /*--------------------------------------------------------------
@@ -481,6 +485,7 @@ a:active {
 	width : 33%;
 	position: fixed;
 	right : -6em;
+	z-index: 10;
 }
 
 .menu-button-cls-1, .menu-button-cls-3 {
@@ -594,10 +599,12 @@ a:active {
 }
 
 .main-navigation {
+	/* old
 	clear: both;
 	display: block;
 	float: left;
-	width: 100%;
+	width: 100%; */
+	display : none;
 }
 
 .main-navigation ul {

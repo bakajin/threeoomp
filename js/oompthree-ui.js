@@ -46,10 +46,10 @@ function init() {
 		scene.add( ambientLight );
 
 		// field of view, aspect ratio, near plane, far plane 
-		camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 150);
+		camera = new THREE.PerspectiveCamera( 63, window.innerWidth / window.innerHeight, 1, 150);
 	
 		camera.position.x = 0;
-		camera.position.y = 100;
+		camera.position.y = 90;
 		camera.position.z = 0;
 		
 
@@ -70,17 +70,28 @@ function init() {
 
 	};
 
-	// insert loading of texture here if needed
+	// insert textureLoader
+	var textureLoader = new THREE.TextureLoader( manager );
 
 	// model background
 	var bgLoader = new THREE.OBJLoader( manager );
 				bgLoader.load( themePath + '/assets/three_bg-tri-grid.obj', function ( object ) {
-
+					object.name = "bg-grid-1";
 					object.traverse( function ( child ) {
 
 						if ( child instanceof THREE.Mesh ) {
 
-							child.material = new THREE.MeshPhongMaterial( { color: 0xffffff, emissive : 0x000000, specular: 0x111111, shininess: 24, shading: THREE.FlatShading} ); // specularMap, aoMap, (normalMap)
+							child.material = new THREE.MeshPhongMaterial({ 
+														color: 0xffffff,
+														emissive : 0x000000,
+														specular: 0x111111,
+														shininess: 24, 
+														shading: THREE.FlatShading,
+														aoMap : textureLoader.load(themePath + '/assets/bg-tri-grid_ambocc.png'),
+														normalMap : textureLoader.load(themePath + '/assets/bg-tri-grid_normal.png'),
+														normalScale: new THREE.Vector2( 1, 1 )
+
+											}); // specularMap, aoMap, (normalMap)
 
 						}//color: 0xffffff, emissive : 0x66655e, specular: 0xd4c978, shininess: 42, shading: THREE.FlatShading
 
@@ -98,23 +109,46 @@ function init() {
 					camera.lookAt(object.position);
 
 				}, onProgress, onError );
+	
+	//environment map ballon (for reflectivity)
 
 	// model balloon
 	 var balloonLoader = new THREE.OBJLoader( manager );
 				balloonLoader.load( themePath + '/assets/three_mylar-balloon.obj', function ( object ) {
-
+					var sphericalEnvironmentTexture = textureLoader.load(themePath + '/assets/app_hallway-2.jpg');
+						sphericalEnvironmentTexture.mapping = THREE.SphericalReflectionMapping;
+					
 					object.traverse( function ( child ) {
 
 						if ( child instanceof THREE.Mesh ) {
 
-							child.material = new THREE.MeshStandardMaterial( { color: 0xd78081 } ); // roughness, metalness, specularMap, normalMap, (normalScale), envMap, reflectivity, combine
+							child.material = new THREE.MeshPhongMaterial({ 
+
+															color: 0xD4C978,
+															emissive : 0x000000,
+															specular: 0x111111,
+															shininess: 24, 
+															shading: THREE.SmoothShading,
+															aoMap : textureLoader.load(themePath + '/assets/mylar-ballon-low_ambocc.png'),
+															normalMap : textureLoader.load(themePath + '/assets/mylar-ballon-low_normal.png'),
+															normalScale: new THREE.Vector2( 1, 1 ),
+															envMap : sphericalEnvironmentTexture,
+															combine : THREE.MixOperation,
+
+															
+
+											}); //envMap : textureLoader.load(themePath + '/assets/app_hallway-2.jpg'),
+											// roughness, metalness, specularMap, normalMap, (normalScale), envMap, reflectivity, combine
+							
+							//reflectivity : 
 
 						}
 
 					} );
 
-					object.position.z = 20;
+					
 				/*
+					object.position.z = 20;
 					object.position.y = - 95;
 					object.rotation.y = 90;
 					object.scale.x = 10;
@@ -125,10 +159,42 @@ function init() {
 					
 
 				}, onProgress, onError );
+	
+	var ropeLoader = new THREE.OBJLoader( manager );
+		ropeLoader.load( themePath + '/assets/rope-mp.obj', function ( object ) {
+					object.traverse( function ( child ) {
 
+						if ( child instanceof THREE.Mesh ) {
+
+							child.material = new THREE.MeshPhongMaterial({ 
+
+															color: 0x000000,
+															emissive : 0x000000,
+															specular: 0x111111,
+															shininess: 24, 
+															shading: THREE.SmoothShading,
+									
+											});
+
+						}
+
+					} );
+
+					scene.add( object );
+					
+
+				}, onProgress, onError );
 
 
 	renderer = new THREE.WebGLRenderer();
+	/* 
+	
+	renderer.setPixelRatio( window.devicePixelRatio );
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	
+	*/
+	renderer.setPixelRatio( window.devicePixelRatio );
+	
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	
 	view.appendChild( renderer.domElement );
@@ -143,83 +209,6 @@ function animate() {
     //mesh.rotation.y += 0.02;
 
 	renderer.render( scene, camera );
-}
-
-function backgroundAsset(list) {
-	// instantiate a loader
-	var bgLoader = new THREE.OBJLoader();
-
-		bgLoader.load(
-			// resource URL
-			themePath + list,
-				// Function when resource is loaded
-				function ( object ) {
-					//scene.add( object );
-					//for ( var i = 0; i < 2; i ++ ) {
-						console.log("mesh bg");
-						//	if(i > 0) {
-							bgmaterial = new THREE.MeshPhongMaterial( { color: 0xededdd } )//, emissive: 0x4d4b44, specular: 0xffffff, shininess: 3, shading: THREE.FlatShading, wireframe: false, fog: true } ); //fix shader
-					//	} else {
-							//material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } ); //fix shader
-					//	}
-						var obj = object.content;
-
-    						obj.traverse( function ( child ) {
-
-        										if ( child instanceof THREE.Mesh ) {
-
-           														 	child.material = bgmaterial;
-
-        										}
-
-    						});
-    					obj.scale.set( 10, 10, 10 );
-    					scene.add( obj );
-				});
-
-				//	    var bgmesh = new THREE.Mesh( object.geometry, bgmaterial );
-    						//bgmesh.position.set( 0, i * 1, 0 );
-    			//			bgmesh.scale.set( 10, 10, 10 );
-    			//			scene.add( bgmesh );
-				//}
-
-			//}
-		//);
-
-	/*var balloonLoader = new THREE.OBJLoader();
-
-		balloonLoader.load(
-			// resource URL
-			themePath + '/assets/three_mylar-balloon.obj',
-			//'models/collada/monster/monster.dae',
-			// Function when resource is loaded
-			function ( object ) {
-				scene.add( object );
-			}
-		);*/
-}
-
-function balloonAsset(list) {
-	// instantiate a loader
-	var balloonLoader = new THREE.OBJLoader();
-		balloonLoader.addEventListener( 'load', function ( event ) {
-
-    var object = event.content;
-
-    	object.traverse( function ( child ) {
-
-        	if ( child instanceof THREE.Mesh ) {
-
-            	child.material = material;
-
-        	}
-
-    	});
-
-    	scene.add( object );
-	});
-
-	balloonLoader.load(themePath + list);
 }
 
 function backgroundTriangleGrid() {
@@ -256,31 +245,82 @@ function menu(phase) {
 }
 
 function svgLoadEvent(event) {
-			
+			// define an array with the main button positions
+				// it goes x y about, portfolio, connect, view
+			var posArray = new Array([50,25],[0,150],[200,230],[-50,0]);
+			var idxConversionArray = new Array();
 
 			paper = Snap("#svg-menu");
 
 		var g = event.select("g");
 			console.log("snap svg load: ", event, g.attr("id") );
+
 			switch(g.attr("id")) {
 				case "menu-button-group":
 							g.transform("t250,25");
-							
+
+							paper.append(g);
 				break;
 				case "main-button-group":
-							var posArray = [];
+							var c = 0;
 
 							for(b = 0; b < menuItems.length; b++) { 
-							console.log(menuItems[b].idx, menuItems[b].parent, menuItems[b].title, menuItems[b].url, menuItems[b].guid);
-						}
+								//check if we are dealing with a main menu item 
+								if(menuItems[b].parent == 0) {
+									//console.log(menuItems[b].idx, menuItems[b].parent, menuItems[b].title, menuItems[b].url, menuItems[b].guid, posArray[c]);
+									var buttonAsset = g.clone();
+										buttonAsset.attr({
+											"id" : "main-button-" + menuItems[b].idx
+										});
+										buttonAsset.transform("t" + posArray[c][0] + "," + posArray[c][1]);
+										
+										buttonAsset.select("text").attr({
+											"text" : menuItems[b].title
+										});
+								
+										paper.append(buttonAsset);
+
+										idxConversionArray[menuItems[b].idx] = c;
+
+									c++;
+								}
+							}
 				break;
 				case "sub-button-group":
+							var d = 0;
+							var previousParent = 14;
 
+							for(b = 0; b < menuItems.length; b++) { 
+								//check if we are dealing with a sub menu item 
+								if(menuItems[b].parent != 0 & menuItems[b].idx != undefined) {
+									
+									if(previousParent != parseInt(menuItems[b].parent) ) {
+										d++;
+										previousParent = parseInt(menuItems[b].parent);
+									}
+
+									var subButtonAsset = g.clone();
+										subButtonAsset.attr({
+											"id" : "sub-button-" + menuItems[b].idx
+										});
+										subButtonAsset.transform("t" + (posArray[ d ][0] + 10) + "," + ( posArray[d][1] + (d + 1) * 30 ) );
+										
+										subButtonAsset.select("text").attr({
+											"text" : menuItems[b].title
+										});
+								
+										paper.append(subButtonAsset);
+									
+									console.log(menuItems[b].idx, menuItems[b].parent, menuItems[b].title, menuItems[b].url, menuItems[b].guid, posArray[d], d);
+									
+								}
+							}
 				break;
 				case "view-button-group":
-
+						console.log("view button");
 				break;
 			}
-			paper.append(g);
+			//this needs to go in the switch statement
+			
 
 }
