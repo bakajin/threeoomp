@@ -255,12 +255,12 @@ header.site-header {
 div.site-branding {
 	position: absolute;
 	left : 39%;
-	top : 8%;
-	line-height: 1.33em;
+	top : 4%;
+	line-height: 1.7em;
 }
 
 div.site-branding h1 a{
-		font-size: 141%;
+		font-size: 152%;
 		font-weight : 300;
 		text-decoration: none;
 		color : #31332F;
@@ -464,17 +464,20 @@ textarea {
 5.1 Links
 --------------------------------------------------------------*/
 a {
-	color: royalblue;
+	color: #5E6166; /*royalblue;*/
 }
 
 a:visited {
-	color: purple;
+	color: #736161; /*purple;*/
 }
 
-a:hover,
+a:hover {
+	background-color : #F4F1DD;
+}
+
 a:focus,
 a:active {
-	color: midnightblue;
+	color: #665E5E;/*midnightblue;*/
 }
 
 /*--------------------------------------------------------------
@@ -482,12 +485,16 @@ a:active {
 --------------------------------------------------------------*/
 /* svg-menu styles */
 #svg-menu {
+	overflow: visible;
 	width : 33%;
 	position: fixed;
 	right : -6em;
 	z-index: 10;
 }
 
+#svg-menu g {
+	cursor: pointer;
+}
 .menu-button-cls-1, .menu-button-cls-3 {
 	fill: #d4c978;
 }
@@ -499,7 +506,7 @@ a:active {
 
 .menu-button-cls-1, .menu-button-cls-2 {
 	stroke-miterlimit: 10;
-	stroke-width: 0.5px;
+	stroke-width: 0.05em;
 }
 
 .menu-button-cls-2 {
@@ -810,6 +817,18 @@ a:active {
 /*--------------------------------------------------------------
 10.1 Posts and pages
 --------------------------------------------------------------*/
+
+div#content div#primary {
+	/* turning off widgets and comments */
+	padding-top: 19%;
+}
+
+body.blog div#content div#secondary {
+	/* turning off widgets and comments */
+
+	display: none;
+}
+
 .sticky {
 	display: block;
 }
@@ -819,16 +838,33 @@ a:active {
 
 }
 
-div#content div#primary {
-	/* turning off widgets and comments */
-	padding-top: 15%;
+.hentry h1 a {
+	text-decoration: none;
+	color: #31332F;
+	font-size: 110%;
+
 }
 
-body.blog div#content div#secondary {
-	/* turning off widgets and comments */
-
-	display: none;
+.hentry h1 a:hover {
+	color: #61665E;
+	cursor: pointer;
 }
+
+.hentry h1 a:active {
+	color: #000000;
+}
+
+.hentry h1 a:visited {
+	color: #736161;
+}
+ .entry-meta, .entry-footer {
+ 	font-size : 81%;
+}
+
+.entry-meta span a, .entry-footer span a {
+ 	text-decoration: none;
+ 	color: #61665E;
+ }
 
 .byline,
 .updated:not(.published) {
@@ -849,6 +885,10 @@ body.blog div#content div#secondary {
 .page-links {
 	clear: both;
 	margin: 0 0 1.5em;
+}
+
+.entry-footer {
+	display : block;
 }
 
 /*--------------------------------------------------------------

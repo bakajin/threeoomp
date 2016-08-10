@@ -112,6 +112,10 @@ function oompthree_custom_scripts() {
 	wp_register_script('three-js', get_template_directory_uri() . '/js/three.min.js');
 	wp_enqueue_script('three-js');
 
+	// loader script for tweening values for animation
+	wp_register_script('tween', get_template_directory_uri() . '/js/Tween.js');
+	wp_enqueue_script('tween');
+
 	// loader script for threejs obj
 	wp_register_script('loader-obj', get_template_directory_uri() . '/js/loaders/OBJLoader.js');
 	wp_enqueue_script('loader-obj');
