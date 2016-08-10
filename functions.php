@@ -113,8 +113,8 @@ function oompthree_custom_scripts() {
 	wp_enqueue_script('three-js');
 
 	// loader script for tweening values for animation
-	wp_register_script('tween', get_template_directory_uri() . '/js/Tween.js');
-	wp_enqueue_script('tween');
+	wp_register_script('tweenMax', 'http://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenMax.min.js');
+	wp_enqueue_script('tweenMax');
 
 	// loader script for threejs obj
 	wp_register_script('loader-obj', get_template_directory_uri() . '/js/loaders/OBJLoader.js');

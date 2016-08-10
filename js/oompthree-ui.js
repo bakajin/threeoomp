@@ -10,6 +10,8 @@ var scene, camera, renderer, directionalLight, hemisphereLight, ambientLight;
 var bgGeometry, bgMaterial, bgMesh;
 
 var mylarBalloon = new THREE.Object3D();
+var mylarBalloonMixer = new TimelineLite();
+
 var balloonMaterial, balloonMesh;
 
 var balloonAnimationMixer;
@@ -43,7 +45,7 @@ function init() {
 		//scene.add( hemisphereLight );
 		ambientLight = new THREE.AmbientLight( 0x000000 );
 		directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
-		directionalLight.position.set( 0, 1, 0 );
+		directionalLight.position.set( 0, 2, 0 );
 		
 		scene.add( directionalLight );
 		scene.add( ambientLight );
@@ -73,7 +75,8 @@ function init() {
 
 	};
 	// insert a new animation mixer to control animation clips
-	balloonAnimationMixer = new THREE.AnimationMixer(scene);
+	//balloonAnimationMixer = new THREE.AnimationMixer(scene);
+	
 	// insert textureLoader
 	var textureLoader = new THREE.TextureLoader( manager );
 
@@ -146,16 +149,21 @@ function init() {
 	//environment map ballon (for reflectivity)
 	
 	// model balloon
-	 var balloonLoader = new THREE.OBJLoader( manager );
-				balloonLoader.load( themePath + '/assets/three_mylar-balloon.obj', function ( object ) {
-					var sphericalEnvironmentTexture = textureLoader.load(themePath + '/assets/app_hallway-2.jpg');
-						sphericalEnvironmentTexture.mapping = THREE.SphericalReflectionMapping;
-					
+	var axis = new THREE.AxisHelper( 100 );
+		mylarBalloon.add( axis );
+
+	var balloonLoader = new THREE.OBJLoader( manager );
+		balloonLoader.load( themePath + '/assets/helium-balloon_2.2.obj', function ( object ) {
+				var sphericalEnvironmentTexture = textureLoader.load(themePath + '/assets/app_hallway-2.jpg');
+					sphericalEnvironmentTexture.mapping = THREE.SphericalReflectionMapping;
+					mylarBalloon.name = "helium-balloon";
+				
 					object.traverse( function ( child ) {
-
+						//console.log("name: ", child.name, object.matrixWorld);
 						if ( child instanceof THREE.Mesh ) {
-
-							child.material = new THREE.MeshPhongMaterial({ 
+							switch(child.name) {
+								case "mylar-ballon-low":
+											child.material = new THREE.MeshPhongMaterial({ 
 
 															color: 0xD4C978,
 															emissive : 0x000000,
@@ -166,67 +174,103 @@ function init() {
 															normalMap : textureLoader.load(themePath + '/assets/mylar-ballon-low_normal.png'),
 															normalScale: new THREE.Vector2( 1, 1 ),
 															envMap : sphericalEnvironmentTexture,
-															combine : THREE.MixOperation,
-
-															
-
+															combine : THREE.MixOperation															
 											}); //envMap : textureLoader.load(themePath + '/assets/app_hallway-2.jpg'),
 											// roughness, metalness, specularMap, normalMap, (normalScale), envMap, reflectivity, combine
-							
-							//reflectivity : 
 
-						}
+								break;
 
-					} );
-
-					
-				/*
-					object.position.z = 20;
-					object.position.y = - 95;
-					object.rotation.y = 90;
-					object.scale.x = 10;
-					object.scale.y = 10;
-					object.scale.z = 10;
-				*/
-					mylarBalloon.add( object );
-					
-
-				}, onProgress, onError );
-	
-	var ropeLoader = new THREE.OBJLoader( manager );
-		ropeLoader.load( themePath + '/assets/rope-mp.obj', function ( object ) {
-					object.traverse( function ( child ) {
-
-						if ( child instanceof THREE.Mesh ) {
-
-							child.material = new THREE.MeshPhongMaterial({ 
+								case "rope":
+											child.material = new THREE.MeshPhongMaterial({ 
 
 															color: 0x000000,
 															emissive : 0x000000,
 															specular: 0x111111,
 															shininess: 24, 
-															shading: THREE.SmoothShading,
+															shading: THREE.SmoothShading
+											});
+
+								break;
+								
+								case "wire-MP":
+											child.material = new THREE.MeshPhongMaterial({ 
+
+															color: 0x000000,
+															emissive : 0x000000,
+															specular: 0x111111,
+															shininess: 24, 
+															shading: THREE.SmoothShading
 									
 											});
 
+								break;
+								
+								default:
+											child.material = new THREE.MeshLambertMaterial({ 
+														
+														color: 0xD78081,
+														emissive : 0x000000,
+														shading: THREE.SmoothShading,
+														wireframe : true,
+														wireframeLinewidth : 2
+
+											}); // specularMap, aoMap, (normalMap)
+								break;
+								
+							}	
+							
 						}
 
 					} );
+	
 
 					mylarBalloon.add( object );
 					
 
 				}, onProgress, onError );
+	
 
 		mylarBalloon.scale.x = 0.81;
 		mylarBalloon.scale.y = 0.81;
 		mylarBalloon.scale.z = 0.81;
+
 		
-		mylarBalloon.position.z = -8; //up and down, vertical
-		mylarBalloon.position.y = 0;//moves through the grid
-		mylarBalloon.position.x = -12; // left to right
+		mylarBalloon.position.z = -38; //up and down, vertical positive is down negative is up!
+		mylarBalloon.position.y = 10;//moves through the grid
+		mylarBalloon.position.x = -34; // left to right
 		
+
+	//	mylarBalloon.rotation.y = 1;
 		scene.add(mylarBalloon);
+		//move to separate function
+		/*var balloonKeys = new Array();
+			balloonKeys[0] = { x : 0, y : 10, z : 141 };
+			balloonKeys[1] = { x : -9, y : 10, z : 110 };
+			balloonKeys[2] = { x : 7, y : 10, z : 63 };
+			balloonKeys[3] = { x : -6, y : 10, z : 28 };
+			balloonKeys[4] = { x : 5, y : 10, z : -5 };
+			balloonKeys[5] = { x : -4, y : 10, z : -42 };
+
+		var tween = new TWEEN.Tween(balloonKeys[0]).to(balloonKeys[1], 333);
+
+		var keysTweens = new Array();
+			keysTweens[0] = new TWEEN.Tween(balloonKeys[1]).to(balloonKeys[2], 333);
+			keysTweens[1] = new TWEEN.Tween(balloonKeys[2]).to(balloonKeys[3], 333);
+			keysTweens[2] = new TWEEN.Tween(balloonKeys[3]).to(balloonKeys[4], 333);
+			keysTweens[3] = new TWEEN.Tween(balloonKeys[4]).to(balloonKeys[5], 333);
+
+			tween.chain(keysTweens[0],keysTweens[1],keysTweens[2],keysTweens[3]);
+			//tween.delay(500);
+			tween.onUpdate(function(){
+   						mylarBalloon.position.x = balloonPos.x;
+   						mylarBalloon.position.y = balloonPos.y;
+   						mylarBalloon.position.z = balloonPos.z;
+			});
+
+		tween.easing(TWEEN.Easing.Quadratic.InOut);
+*/
+//tween.start();
+		//mylarBalloon		
 
 	var menuLoader = new THREE.OBJLoader( manager );
 		menuLoader.load( themePath + '/assets/menu-grid.obj', function ( object ) {
@@ -270,17 +314,18 @@ function init() {
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	
 	view.appendChild( renderer.domElement );
+
+	
 }
 
 function animate() {
 	//console.log("animate");
 	//animate stuff
 	requestAnimationFrame( animate );
-
 	//mesh.rotation.x += 0.01;
     //mesh.rotation.y += 0.02;
-
 	renderer.render( scene, camera );
+	//TWEEN.update();
 }
 
 function backgroundTriangleGrid() {
@@ -509,7 +554,8 @@ function mainMenuHandler(event) {
 												menuGrid.traverse( function ( child ) {
 											
 														if ( child instanceof THREE.Mesh ) {
-																				child.material.opacity = 1;
+																				//child.material.opacity = 1;
+																				TweenLite.to(child.material, 1, {opacity:1});
 														}//color: 0xffffff, emissive : 0x66655e, specular: 0xd4c978, shininess: 42, shading: THREE.FlatShading
 												} );
 
