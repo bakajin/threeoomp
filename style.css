@@ -255,7 +255,7 @@ header.site-header {
 div.site-branding {
 	position: absolute;
 	left : 39%;
-	top : 4%;
+	top : 7%;
 	line-height: 1.7em;
 }
 
@@ -273,13 +273,19 @@ div.site-branding h2{
 	color : #31332F;
 }
 
-div#canvas3d {
+#threed-background {
 	position: fixed;
 	z-index: -1;
 	width : 100%;
 	height : 100%;
 }
-
+#threed-foreground {
+	position: fixed;
+	z-index: 9;
+	width : 100%;
+	height : 100%;
+	pointer-events : none;
+}
 header.entry-header h1 {
 	font-size: 121%;
 	font-weight : 300;
@@ -495,6 +501,11 @@ a:active {
 #svg-menu g {
 	cursor: pointer;
 }
+
+#svg-menu g rect {
+	pointer-events: none;
+}
+
 .menu-button-cls-1, .menu-button-cls-3 {
 	fill: #d4c978;
 }
@@ -679,39 +690,56 @@ a:active {
 	display: none;
 }
 
-@media screen and (max-width: 600px) {
-	.menu-toggle,
-	.main-navigation.toggled .nav-menu {
-		display: block;
+@media screen and (max-width: 640px) {
+
+	.site-branding {
+		left: 25%!important;
+		/*top: 7%!important;*/
+		line-height: 1.2em!important;
 	}
 
-	.main-navigation ul {
-		display: none;
+	.site-branding h1 a {
+		font-size: 109%!important;
+
+	}
+
+	.site-branding h2 {
+		font-size: 98%!important;
+
+	}
+
+	#svg-menu {
+		width : 66%!important;
+		right : -15.5%!important;
+	}
+
+	div#content div#primary {
+	/* more padding on top for phones */
+		padding-top: 27%!important;
+	}
+
+	.site-main .comment-navigation,
+	.site-main .paging-navigation,
+	.site-main .post-navigation {
+		margin: 0 0 1.5em;
+		overflow: hidden;
+	}
+
+	.comment-navigation .nav-previous,
+	.paging-navigation .nav-previous,
+	.post-navigation .nav-previous {
+		float: left;
+		width: 50%;
+	}
+
+	.comment-navigation .nav-next,
+	.paging-navigation .nav-next,
+	.post-navigation .nav-next {
+		float: right;
+		text-align: right;
+		width: 50%;
 	}
 }
-
-.site-main .comment-navigation,
-.site-main .paging-navigation,
-.site-main .post-navigation {
-	margin: 0 0 1.5em;
-	overflow: hidden;
-}
-
-.comment-navigation .nav-previous,
-.paging-navigation .nav-previous,
-.post-navigation .nav-previous {
-	float: left;
-	width: 50%;
-}
-
-.comment-navigation .nav-next,
-.paging-navigation .nav-next,
-.post-navigation .nav-next {
-	float: right;
-	text-align: right;
-	width: 50%;
-}
-
 /*--------------------------------------------------------------
 6.0 Accessibility
 --------------------------------------------------------------*/
@@ -857,6 +885,7 @@ body.blog div#content div#secondary {
 .hentry h1 a:visited {
 	color: #736161;
 }
+
  .entry-meta, .entry-footer {
  	font-size : 81%;
 }
@@ -864,7 +893,7 @@ body.blog div#content div#secondary {
 .entry-meta span a, .entry-footer span a {
  	text-decoration: none;
  	color: #61665E;
- }
+}
 
 .byline,
 .updated:not(.published) {

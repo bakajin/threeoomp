@@ -73,4 +73,5 @@
 	</header><!-- #masthead -->
 
 	<div id="content" class="site-content">
-		<div id="canvas3d"></div>
+		<div id="threed-background"></div>
+		<div id="threed-foreground"></div>
