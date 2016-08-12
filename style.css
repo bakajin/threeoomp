@@ -492,9 +492,9 @@ a:active {
 /* svg-menu styles */
 #svg-menu {
 	overflow: visible;
-	width : 33%;
+	width : 32%;
 	position: fixed;
-	right : -6em;
+	right : -5%;
 	z-index: 10;
 }
 

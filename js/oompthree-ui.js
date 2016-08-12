@@ -154,8 +154,8 @@ function init() {
 	//environment map ballon (for reflectivity)
 	
 	// model balloon
-	//var axis = new THREE.AxisHelper( 100 );
-		//mylarBalloon.add( axis );
+	var axis = new THREE.AxisHelper( 50 );
+		scene.add( axis );
 
 	var balloonLoader = new THREE.OBJLoader( manager );
 		balloonLoader.load( themePath + '/assets/helium-balloon_2.2.obj', function ( object ) {
@@ -301,8 +301,8 @@ function init() {
 	
 	*/
 	renderer.setPixelRatio( window.devicePixelRatio );
-	
-	renderer.setSize( window.innerWidth, window.innerHeight );
+	onWindowResize();
+	//renderer.setSize( window.innerWidth, window.innerHeight );
 	
 	backgroundView.appendChild( renderer.domElement );
 
@@ -317,26 +317,36 @@ function onWindowResize() {
 				widthRatio = SCREEN_HEIGHT / SCREEN_WIDTH;
 				heightRatio = SCREEN_WIDTH / SCREEN_HEIGHT;
 
-				console.log("ratios:: width: " + widthRatio + " heigth: " + heightRatio);
-				
 				camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
 				camera.updateProjectionMatrix();
 
-				var scaleObj = scene.getObjectByName( "bg-grid-1" );
+				console.log("ratios:: width: " + widthRatio + " heigth: " + heightRatio, camera.position.y, camera.position.y * widthRatio);
+				
+				camera.position.y = 130 * widthRatio;
+
+				renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+				//camera.position.z = 1 * widthRatio;
+
+				/*var scaleObj = scene.getObjectByName( "bg-grid-1" );
 					scaleObj.scale.x = heightRatio;
-					scaleObj.scale.y = heightRatio;
+					scaleObj.scale.z = heightRatio;
+					console.log("pos shift1 : " + scaleObj.position.z)
+					scaleObj.position.z = 10 * heightRatio;
+					console.log("pos shift2 : " + scaleObj.position.z)
 				//	scaleObj.scale.z = 10;
 
 					scaleObj = scene.getObjectByName( "bg-grid-2" );
 					scaleObj.scale.x = heightRatio;
-					scaleObj.scale.y = heightRatio;
+					scaleObj.scale.z = heightRatio;
+					scaleObj.position.z = 10 * heightRatio;
 				//	
 					scaleObj = scene.getObjectByName( "menu-grid" );
 					scaleObj.scale.x = heightRatio;
-					scaleObj.scale.y = heightRatio;
+					scaleObj.scale.z = heightRatio;
+					scaleObj.position.z = 10 * heightRatio;
 				//	
-
-				renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+				*/
+				
 
 }
 
