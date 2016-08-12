@@ -353,6 +353,7 @@ th {
 }
 footer.site-footer {
 	text-align: center;
+	font-size : 81%;
 }
 
 /*--------------------------------------------------------------
@@ -502,7 +503,11 @@ a:active {
 	cursor: pointer;
 }
 
-#svg-menu g rect {
+#svg-menu g rect#mouse-leave {
+	cursor: default;
+}
+
+#svg-menu g#close-icon rect {
 	pointer-events: none;
 }
 
@@ -886,6 +891,9 @@ body.blog div#content div#secondary {
 	color: #736161;
 }
 
+body.blog .hentry p {
+	/* wordpress wraps images in a p elem so i cant use this yet*/ 
+}
  .entry-meta, .entry-footer {
  	font-size : 81%;
 }

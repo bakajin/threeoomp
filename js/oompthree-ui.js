@@ -13,6 +13,8 @@ var heightRatio = SCREEN_WIDTH / SCREEN_HEIGHT;
 
 var scene, camera, renderer, directionalLight, hemisphereLight, ambientLight;
 
+var axis;
+
 var bgGeometry, bgMaterial, bgMesh;
 
 var mylarBalloon = new THREE.Object3D();
@@ -45,8 +47,10 @@ function init() {
 		scene = new THREE.Scene();
 		scene.background = 0xffffff;
 		//Fog( hex, near, far )
-		scene.fog = new THREE.Fog( 0xffffff, 1, 150);
-		//scene.fog = new THREE.Fog( 0xd4c978, 1, 150);
+		//scene.fog = new THREE.Fog( 0xffffff, 1, 450);
+		
+		//backgroundScene = new THREE.Scene();
+		//foregroundScene = new THREE.Scene();
 
 	//hemisphereLight = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
 		//scene.add( hemisphereLight );
@@ -59,10 +63,10 @@ function init() {
 		scene.add( ambientLight );
 
 		// field of view, aspect ratio, near plane, far plane 
-		camera = new THREE.PerspectiveCamera( 63, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 150);
-		camera.position.x = 0;
-		camera.position.y = 90;
-		camera.position.z = 0;
+		camera = new THREE.PerspectiveCamera( 63, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 450);
+		//camera.position.x = 0;
+		//camera.position.y = 90;
+		//camera.position.z = 0;
 	
 	//set up manager
 	var manager = new THREE.LoadingManager();
@@ -105,7 +109,7 @@ function init() {
 														aoMap : textureLoader.load(themePath + '/assets/bg-tri-grid_ambocc.png'),
 														aoMapIntensity : 0.61,
 														normalMap : textureLoader.load(themePath + '/assets/bg-tri-grid_normal.png'),
-														normalScale: new THREE.Vector2( 0.61, 0.61 )
+														normalScale: new THREE.Vector2( 0.51, 0.51 )
 
 											}); // specularMap, aoMap, (normalMap)
 
@@ -121,7 +125,8 @@ function init() {
 					object.scale.z = 10;
 				*/
 					scene.add( bgOne );
-					camera.lookAt(bgOne.position);
+					//camera.lookAt(bgOne.position);
+					//camera.lookAt(new THREE.Vector3( 0, 0, 0 ));
 					directionalLight.target = bgOne;
 
 					bgTwo = object.clone();
@@ -146,7 +151,7 @@ function init() {
 					} );
 
 
-				bgTwo.position.y = 0.01;
+				bgTwo.position.y = 0.1;
 				scene.add(bgTwo);
 
 				}, onProgress, onError );
@@ -154,7 +159,10 @@ function init() {
 	//environment map ballon (for reflectivity)
 	
 	// model balloon
-	var axis = new THREE.AxisHelper( 50 );
+		axis = new THREE.AxisHelper( 10 );
+		axis.visible = false;
+		axis.position.y += 10;
+		axis.name = "camera_interest";
 		scene.add( axis );
 
 	var balloonLoader = new THREE.OBJLoader( manager );
@@ -239,29 +247,31 @@ function init() {
 		mylarBalloon.scale.y = 0.81;
 		mylarBalloon.scale.z = 0.81;
 
-		
-		mylarBalloon.position.z = -38; //up and down, vertical positive is down negative is up!
+		mylarBalloon.position.x = 0; // left to right
 		mylarBalloon.position.y = 10;//moves through the grid
-		mylarBalloon.position.x = -34; // left to right
-		
-		var keyToKey = 1.33;
-		mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : 0, y : 10, z : 141, ease: SlowMo.ease.config(0.1, 0.1, false)});
-		mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -9, y : 10, z : 110, ease: SlowMo.ease.config(0.1, 0.1, false)});
-		mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : 7, y : 10, z : 63, ease: SlowMo.ease.config(0.1, 0.1, false)});
-		mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -6, y : 10, z : 28, ease: SlowMo.ease.config(0.1, 0.1, false)});
-		mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : 5, y : 10, z : -5, ease: SlowMo.ease.config(0.1, 0.1, false)});
-		mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -28, y : 10, z : -38, ease: SlowMo.ease.config(0.1, 0.1, false)});
-		//bouncing up top
-		mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -30, y : 10, z : -32, ease: SlowMo.ease.config(0.1, 0.1, false)});
-		mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -32, y : 10, z : -38, ease: SlowMo.ease.config(0.1, 0.1, false)});
-		mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -33, y : 10, z : -34, ease: SlowMo.ease.config(0.1, 0.1, false)});
-		mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -33.5, y : 10, z : -38, ease: SlowMo.ease.config(0.1, 0.1, false)});
-		mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -33.9, y : 10, z : -36, ease: SlowMo.ease.config(0.1, 0.1, false)});
-		mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -34.2, y : 10, z : -38, ease: SlowMo.ease.config(0.1, 0.1, false)});
+		mylarBalloon.position.z = 141; //up and down, vertical positive is down negative is up!
 
-		mylarBalloonMixer.play();
+		var keyToKey = 1.33;
+		//Power0.easeNone
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : 0, y : 10, z : 141, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -3, y : 14, z : 110, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : 2, y : 10, z : 63, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -6, y : 13, z : 28, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : 3, y : 10, z : -5, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -12, y : 12, z : -38, ease: SlowMo.ease.config(0.1, 0.1, false)});
+		//bouncing up top
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -30, y : 10, z : -34, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -33, y : 11, z : -38, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -35, y : 10, z : -36, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -35.5, y : 10.5, z : -38, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -35.9, y : 10.1, z : -37, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -36.2, y : 10, z : -38, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -36.9, y : 10.1, z : -37.5, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -37.2, y : 10, z : -38, ease: SlowMo.ease.config(0.1, 0.1, false)});
+
+			mylarBalloonMixer.play();
 	//	mylarBalloon.rotation.y = 1;
-		scene.add(mylarBalloon);
+			scene.add(mylarBalloon);
 
 	var menuLoader = new THREE.OBJLoader( manager );
 		menuLoader.load( themePath + '/assets/menu-grid.obj', function ( object ) {
@@ -293,7 +303,7 @@ function init() {
 				}, onProgress, onError );
 
 		//for the future two canvasses on over the other with the content in between setting the top renderer to transparent background
-	renderer = new THREE.WebGLRenderer( { alpha: true } );
+	renderer = new THREE.WebGLRenderer( { alpha: true, antialias : true } );
 	/* 
 	
 	renderer.setPixelRatio( window.devicePixelRatio );
@@ -320,12 +330,22 @@ function onWindowResize() {
 				camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
 				camera.updateProjectionMatrix();
 
-				console.log("ratios:: width: " + widthRatio + " heigth: " + heightRatio, camera.position.y, camera.position.y * widthRatio);
 				
 				camera.position.y = 130 * widthRatio;
 
+				var interest = scene.getObjectByName( "camera_interest" );
+				var camMove = ( SCREEN_HEIGHT / 2 ) * widthRatio
+					camMove /= 5;
+					
+				//console.log("ratios:: width: " + widthRatio + " height: " + heightRatio, camMove);
+					
+					interest.position.z = -55 + camMove;
+
+					camera.position.z = interest.position.z;
+					camera.lookAt(interest.position);
+
 				renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
-				//camera.position.z = 1 * widthRatio;
+				//camera.position = ;
 
 				/*var scaleObj = scene.getObjectByName( "bg-grid-1" );
 					scaleObj.scale.x = heightRatio;
@@ -372,6 +392,14 @@ function menu(phase) {
 		//select the menu container in the menu on header.php
 		paper = Snap("#svg-menu");
 		paper.attr({ viewBox : "0 0 565 500" });
+
+	var bgRect = paper.group( paper.rect(-100, 0, 20, 650).attr({"fill" : "#ffffff", "id" : "mouse-leave"}), paper.rect(-100, 600, 600, 20).attr({"fill" : "#ffffff", "id" : "mouse-leave"}) );
+		//bgRect.attr("id", "mouse-leave");
+
+		bgRect.attr("opacity", "0");
+		
+		paper.append(bgRect);
+		
 		//
 		switch(phase) {
 			case "load":
@@ -395,7 +423,7 @@ function menu(phase) {
 function svgLoadEvent(event) {
 			// define an array with the main button positions
 				// it goes x y about, portfolio, connect, view
-			var posArray = new Array([23,157],[-12,363],[215,475],[-50,0]);
+			var posArray = new Array([24,144],[-12,342],[214,460],[-50,0]);
 			var idxConversionArray = new Array();
 
 			paper = Snap("#svg-menu");
@@ -592,7 +620,7 @@ function mainMenuHandler(event) {
 												} );
 
 											//lets contract the menu when the user mouse leaves the area
-											paper.mouseout(mainMenuHandler);
+											paper.select("#mouse-leave").mouseover(mainMenuHandler);
 
 									break;
 
@@ -606,10 +634,10 @@ function mainMenuHandler(event) {
 						}
 		break;
 
-		case "svg-menu":
+		case "mouse-leave":
 				// the leaving of the menu
 				switch(event.type) {
-					case "mouseout":
+					case "mouseover":
 								//lets contract the menu when the user mouse leaves the area
 								menuGrid = scene.getObjectByName( "menu-grid" );
 								menuGrid.traverse( function ( child ) {
