@@ -575,6 +575,12 @@ function svgLoadEvent(event) {
 							g.transform("t300,100");
 							g.attr("class", "menu-button-group");
 							
+							var closeIcon = g.selectAll('rect');
+								//for( c = 0; closeIcon.length; c++ ) {
+									closeIcon[0].transform("t0,-15r0");
+									closeIcon[2].transform("t0,15r0");
+
+								//}
 						//set some event handlers
 							g.select("#button").attr("id", "menu-button-hit")
 							g.select("#menu-button-hit").mouseover(mainMenuHandler);
@@ -611,13 +617,23 @@ function svgLoadEvent(event) {
 										buttonAsset.select("g g g g:first-of-type circle:last-of-type").attr("r", "0");
 										buttonAsset.select("g g g circle:first-of-type").attr("r", "0");
 
-										buttonAsset.mouseover(mainMenuHandler);
-										buttonAsset.mouseout(mainMenuHandler);
-										buttonAsset.mousedown(mainMenuHandler);
-										buttonAsset.mouseup(mainMenuHandler);
-										buttonAsset.touchstart(mainMenuHandler);
-										buttonAsset.touchend(mainMenuHandler);
+									var hitRect = paper.rect(0,0,225,55);
+										hitRect.attr({
+											"id" : "main-button-" + menuItems[b].idx,
+											"class" : "main-button-hit",
+											"fill" : "rgba(0,0,0,0)",
+											"visibility" : "hidden"
+										});
+										
+										hitRect.mouseover(mainMenuHandler);
+										hitRect.mouseout(mainMenuHandler);
+										hitRect.mousedown(mainMenuHandler);
+										hitRect.mouseup(mainMenuHandler);
+										hitRect.touchstart(mainMenuHandler);
+										hitRect.touchend(mainMenuHandler);
 
+										buttonAsset.append(hitRect);
+										
 										paper.append(buttonAsset);
 
 										idxConversionArray[menuItems[b].idx] = c;
@@ -658,14 +674,25 @@ function svgLoadEvent(event) {
 										subButtonAsset.select("g g g g:first-of-type circle:last-of-type").attr("r", "0");
 										subButtonAsset.select("g g g circle:first-of-type").attr("r", "0");
 
-										subButtonAsset.mouseover(mainMenuHandler);
-										subButtonAsset.mouseout(mainMenuHandler);
-										subButtonAsset.mousedown(mainMenuHandler);
-										subButtonAsset.mouseup(mainMenuHandler);
-										subButtonAsset.touchstart(mainMenuHandler);
-										subButtonAsset.touchend(mainMenuHandler);
+									var subHitRect = paper.rect(0,0,120,25);
+										subHitRect.attr({
+											"id" : "sub-button-" + menuItems[b].idx,
+											"class" : "sub-button-hit",
+											"fill" : "rgba(0,0,0,0)",
+											"visibility" : "hidden"
+										});
+
+										subHitRect.mouseover(mainMenuHandler);
+										subHitRect.mouseout(mainMenuHandler);
+										subHitRect.mousedown(mainMenuHandler);
+										subHitRect.mouseup(mainMenuHandler);
+										subHitRect.touchstart(mainMenuHandler);
+										subHitRect.touchend(mainMenuHandler);
+
+										subButtonAsset.append(subHitRect);
 
 										paper.append(subButtonAsset);
+
 									e++;
 									console.log(menuItems[b].idx, menuItems[b].parent, menuItems[b].title, menuItems[b].url, menuItems[b].guid, posArray[d], d);
 									
@@ -704,7 +731,6 @@ function mainMenuHandler(event) {
 		var menuGrid;
 	switch(event.target.id) {
 		case "menu-button-hit":
-
 						switch(event.type) {
 									case "mouseover":
 											console.log("over");
@@ -731,6 +757,20 @@ function mainMenuHandler(event) {
 
 											// lets fade in the red bg grid
 
+											var closeIcon = paper.selectAll("#menu-button-group rect");
+										//for( c = 0; closeIcon.length; c++ ) {
+											/*
+											closeIcon[0].animate({
+												"transform" : "t0 0 r45"
+											});
+											closeIcon[2].animate({
+												"transform" : "t0 0 r-45"
+											});
+											*/
+											closeIcon[0].transform("t0,0r45");
+											closeIcon[2].transform("t0,0r-45");
+
+
 											menuGrid = fgScene.getObjectByName( "menu-grid" );
 											menuGrid.traverse( function ( child ) {
 											
@@ -747,18 +787,15 @@ function mainMenuHandler(event) {
 												el.attr({
 													'visibility': 'visible'
 												});
-
+												el.select("rect").attr({
+													'visibility': 'visible'
+												});
 												TweenLite.to(".main-button-cls-4", 1.21, { opacity: 1, delay: 1 });
 												//TweenLite.to(el.select("g g g g:first-of-type circle:first-of-type"), 1.21, { r: 27, delay: 1.21 });
 												//TweenLite.to(el.select("g g g g:first-of-type circle:last-of-type"), 1.21, { r: 5.5, delay: 1.21 });
 												//TweenLite.to(el.select("g g g circle:first-of-type"), 1.21, { r: 27, delay: 1.21 });
 												//TweenLite.to(  )
-												/*
-												el.select("text").animate({
-																	"opacity" : "1"},
-																	3031,
-																	mina.linear ); //, onAnimComplete
-												*/
+												
 												el.select("g g g g:first-of-type circle:first-of-type").animate({
 																	"r" : "27"},
 																	1231,
@@ -781,7 +818,9 @@ function mainMenuHandler(event) {
 												el.attr({
 													'visibility': 'visible'
 												});
-
+												el.select("rect").attr({
+													'visibility': 'visible'
+												});
 												TweenLite.to(".sub-button-cls-4", 1.21, { opacity: 1, delay: 1.5 });
 
 												el.select("g g g g:first-of-type circle:first-of-type").animate({
@@ -833,6 +872,11 @@ function mainMenuHandler(event) {
 												el.attr({
 													'visibility': 'visible'
 												});
+
+												el.select("rect").attr({
+													'visibility': 'hidden'
+												});
+
 												el.select("text").animate({
 																	"opacity" : "0"},
 																	1516,
@@ -858,6 +902,11 @@ function mainMenuHandler(event) {
 												el.attr({
 													'visibility': 'visible'
 												});
+
+												el.select("rect").attr({
+													'visibility': 'hidden'
+												});
+
 												el.select("text").animate({
 																	"opacity" : "0"},
 																	1116,
@@ -887,7 +936,33 @@ function mainMenuHandler(event) {
 					break;
 				}
 		default:
-			console.log(event);
+			var id = event.target.id;
+				id = id.substr(id.lastIndexOf("-") + 1);
+			console.log(event, id, event.target.className.baseVal);
+			switch(event.target.className.baseVal) {
+				case "main-button-hit":
+							switch(event.type) {
+								case "mouseup":
+												jQuery("li#menu-item-" + id + " a")[0].click();
+								break;
+								default:
+										console.log(event.type);
+								break;
+							}
+							
+				break;
+
+				case "sub-button-hit":
+							switch(event.type) {
+								case "mouseup":
+												jQuery("li#menu-item-" + id + " a")[0].click();
+								break;
+								default:
+										console.log(event.type);
+								break;
+							}
+				break;
+			}
 		break;
 
 	}
