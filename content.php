@@ -14,12 +14,33 @@
 		</div><!-- .entry-meta -->
 		<?php endif; ?>
 	</header><!-- .entry-header -->
+	
+		<?php
+			/* do the featured gallery 
+					cycle on mouseover 
+			*/
+			echo '<div id="featured-gallery-' . $post->ID .'" class="featured-gallery">';
+			$galleryArray = get_post_gallery_ids($post->ID); 
+			$num = 0;
+			foreach ($galleryArray as $id) { 
+					//this should only be rendered for the index
+    				if($num == 0) {
+    						echo '<img id="featured-img-'. $id .'" class="active-img featured-img" src=' . wp_get_attachment_url( $id ) .'>';
+    				} else {
+    						echo '<img id="featured-img-'. $id .'" class="featured-img" src=' . wp_get_attachment_url( $id ) .'>';
+    				}
+    				$num++;
 
+			}
+
+			
+		?>
+	</div>
 	<div class="entry-content">
 		<?php
 			/* translators: %s: Name of current post */
 			the_content( sprintf(
-				__( 'Continue reading %s <span class="meta-nav">&rarr;</span>', oompthree ), 
+				__( 'View project %s <span class="meta-nav">&rarr;</span>', oompthree ), 
 				the_title( '<span class="screen-reader-text">"', '"</span>', false )
 			) );
 		?>

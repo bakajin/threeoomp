@@ -5,6 +5,9 @@
 /* globals */
 var themePath, pageType;
 
+//using user agent because the rest is totally unusable
+var userAgent = new Object();
+
 var SCREEN_WIDTH = window.innerWidth;
 var SCREEN_HEIGHT = window.innerHeight;
 
@@ -12,6 +15,12 @@ var widthRatio = SCREEN_HEIGHT / SCREEN_WIDTH;
 var heightRatio = SCREEN_WIDTH / SCREEN_HEIGHT;
 
 var scene, camera, renderer, directionalLight, hemisphereLight, ambientLight;
+
+var bgScene, fgScene;
+
+var bgRenderer, fgRenderer;
+
+var backgroundView, foregroundView;
 
 var axis;
 
@@ -21,11 +30,6 @@ var mylarBalloon = new THREE.Object3D();
 var mylarBalloonMixer = new TimelineLite();
 
 var balloonMaterial, balloonMesh;
-
-//var balloonAnimationMixer;
-
-var backGroundView;
-var foreGroundView;
 
 //snap svg for the menu
 var paper;
@@ -38,19 +42,52 @@ function render() {
 	animate();	
 }
 
-
 function init() {
-		console.log("init");
+		console.log("init", navigator.userAgent);
+		
+//maybe do in a separate function
+		var uA = navigator.userAgent;
+		
+		//lets check safari first, because chrome hold double values (Chrome and safari)
+		if(uA.search("Safari") != -1) {
+			console.log("Safari or Chrome");
+			userAgent.browser = "Safari";
+		}
+		
+		if(uA.search("Chrome") != -1) {
+			console.log("Chrome");
+			userAgent.browser = "Chrome";
+		}
+
+		if(uA.search("Firefox") != -1) {
+			console.log("Firefox");
+			userAgent.browser = "Firefox";
+		}
+
+		if(uA.search("Opera") != -1) {
+			console.log("Opera");
+			userAgent.browser = "Opera";
+		}
+
+		if(uA.search("Internet Explorer") != -1) {
+			console.log("Explorer");
+			userAgent.browser = "IE";
+		}
+
 		backgroundView = document.getElementById('threed-background');
 		foregroundView = document.getElementById('threed-foreground');
 		
 		scene = new THREE.Scene();
 		scene.background = 0xffffff;
+
+		bgScene = new THREE.Scene();
+		bgScene.background = 0xffffff;
+
+		fgScene = new THREE.Scene();
+
 		//Fog( hex, near, far )
 		//scene.fog = new THREE.Fog( 0xffffff, 1, 450);
 		
-		//backgroundScene = new THREE.Scene();
-		//foregroundScene = new THREE.Scene();
 
 	//hemisphereLight = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
 		//scene.add( hemisphereLight );
@@ -59,8 +96,14 @@ function init() {
 		directionalLight.position.set( 10, 90, 10 );
 		
 
-		scene.add( directionalLight );
-		scene.add( ambientLight );
+		bgScene.add( directionalLight );
+		bgScene.add( ambientLight );
+
+		fgScene.add( directionalLight.clone() );
+		fgScene.add( ambientLight.clone() );
+
+		//bgScene.add( directionalLight );
+		//bgScene.add( ambientLight );
 
 		// field of view, aspect ratio, near plane, far plane 
 		camera = new THREE.PerspectiveCamera( 63, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 450);
@@ -90,6 +133,30 @@ function init() {
 
 	var bgOne;
 	var bgTwo;
+	
+	//environment map ballon (for reflectivity)
+	
+	// model balloon
+		axis = new THREE.AxisHelper( 10 );
+		axis.visible = false;
+		axis.position.y += 10;
+		axis.name = "camera_interest";
+		
+		bgScene.add( axis );
+
+	//renderer = new THREE.WebGLRenderer( { alpha: true, antialias : true } );
+
+	/* 
+	
+	renderer.setPixelRatio( window.devicePixelRatio );
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	
+	*/
+	
+	//renderer.setSize( window.innerWidth, window.innerHeight );
+	//foregroundView.appendChild( renderer.domElement );
+	
+//build the rest of the scene
 	// model background
 	var bgLoader = new THREE.OBJLoader( manager );
 		bgLoader.load( themePath + '/assets/three_bg-tri-grid.obj', function ( object ) {
@@ -124,7 +191,7 @@ function init() {
 					object.scale.y = 10;
 					object.scale.z = 10;
 				*/
-					scene.add( bgOne );
+					bgScene.add( bgOne );
 					//camera.lookAt(bgOne.position);
 					//camera.lookAt(new THREE.Vector3( 0, 0, 0 ));
 					directionalLight.target = bgOne;
@@ -152,20 +219,41 @@ function init() {
 
 
 				bgTwo.position.y = 0.1;
-				scene.add(bgTwo);
+				
+				bgScene.add(bgTwo);
 
 				}, onProgress, onError );
 
-	//environment map ballon (for reflectivity)
-	
-	// model balloon
-		axis = new THREE.AxisHelper( 10 );
-		axis.visible = false;
-		axis.position.y += 10;
-		axis.name = "camera_interest";
-		scene.add( axis );
+	var menuLoader = new THREE.OBJLoader( manager );
+		menuLoader.load( themePath + '/assets/menu-grid.obj', function ( object ) {
+					
+					object.name = "menu-grid";
+					object.traverse( function ( child ) {
 
-	var balloonLoader = new THREE.OBJLoader( manager );
+						if ( child instanceof THREE.Mesh ) {
+
+							child.material = new THREE.MeshLambertMaterial({ 
+														color: 0xD78081,
+														emissive : 0x000000,
+														shading: THREE.SmoothShading,
+														wireframe : true,
+														wireframeLinewidth : 2,
+
+											}); // specularMap, aoMap, (normalMap)
+							child.material.transparent = true;
+							child.material.opacity = 0;
+
+						}//color: 0xffffff, emissive : 0x66655e, specular: 0xd4c978, shininess: 42, shading: THREE.FlatShading
+
+					} );
+
+
+				object.position.y = 0.01;
+				fgScene.add(object);
+
+				}, onProgress, onError );
+
+		var balloonLoader = new THREE.OBJLoader( manager );
 		balloonLoader.load( themePath + '/assets/helium-balloon_2.2.obj', function ( object ) {
 				var sphericalEnvironmentTexture = textureLoader.load(themePath + '/assets/app_hallway-2.jpg');
 					sphericalEnvironmentTexture.mapping = THREE.SphericalReflectionMapping;
@@ -252,75 +340,70 @@ function init() {
 		mylarBalloon.position.z = 141; //up and down, vertical positive is down negative is up!
 
 		var keyToKey = 1.33;
-		//Power0.easeNone
-			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : 0, y : 10, z : 141, ease: SlowMo.ease.config(0.1, 0.1, false)});
-			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -3, y : 14, z : 110, ease: SlowMo.ease.config(0.1, 0.1, false)});
-			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : 2, y : 10, z : 63, ease: SlowMo.ease.config(0.1, 0.1, false)});
-			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -6, y : 13, z : 28, ease: SlowMo.ease.config(0.1, 0.1, false)});
-			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : 3, y : 10, z : -5, ease: SlowMo.ease.config(0.1, 0.1, false)});
-			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -12, y : 12, z : -38, ease: SlowMo.ease.config(0.1, 0.1, false)});
+		var tweenType = "Power1.easeInOut";
+		//var tweenType = "Power.easeIn";
+		//up to the top in a wavey motion
+		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey * 6 ), { z : -36, ease: tweenType });
+		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { x : 12, ease: tweenType, repeat : 2, yoyo : true }, 0);
+		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { y : 12, ease: tweenType, repeat : 2, yoyo : true }, 0);
+		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { x : 4, ease: tweenType, repeat : 3, yoyo : true }, (keyToKey * 2) );
+		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { y : 9, ease: tweenType, repeat : 3, yoyo : true }, (keyToKey * 2) );
+		
+		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey * 6 ), { x : -58, ease: tweenType });
+		//mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { x : -58, ease: tweenType, repeat : -1, yoyo : true }, ( keyToKey * 6 + keyToKey * 6 ) );
+		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { y : 11, ease: tweenType, repeat : -1, yoyo : true }, ( keyToKey * 6 ) );
+		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { z : -35, ease: tweenType, repeat : -1, yoyo : true }, ( keyToKey * 6 ) );
+		
+		//	mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey * 6 ), { x : -20, y : 10, z : -36, ease: tweenType2 });
+		//bounce up top
+
+		/*	mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : 0, y : 10, z : 141, ease: tweenType });
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -3, y : 14, z : 110, ease: tweenType });
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : 2, y : 10, z : 63, ease: tweenType });
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -6, y : 13, z : 28, ease: tweenType });
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : 3, y : 10, z : -5, ease: tweenType });
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -12, y : 12, z : -36, ease: tweenType });
+		*/
 		//bouncing up top
-			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -30, y : 10, z : -34, ease: SlowMo.ease.config(0.1, 0.1, false)});
-			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -33, y : 11, z : -38, ease: SlowMo.ease.config(0.1, 0.1, false)});
-			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -35, y : 10, z : -36, ease: SlowMo.ease.config(0.1, 0.1, false)});
-			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -35.5, y : 10.5, z : -38, ease: SlowMo.ease.config(0.1, 0.1, false)});
-			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -35.9, y : 10.1, z : -37, ease: SlowMo.ease.config(0.1, 0.1, false)});
-			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -36.2, y : 10, z : -38, ease: SlowMo.ease.config(0.1, 0.1, false)});
-			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -36.9, y : 10.1, z : -37.5, ease: SlowMo.ease.config(0.1, 0.1, false)});
-			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -37.2, y : 10, z : -38, ease: SlowMo.ease.config(0.1, 0.1, false)});
+		/*	mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -30, y : 10, z : -32, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -33, y : 11, z : -36, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -34, y : 10, z : -34, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -35.5, y : 10.5, z : -36, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -36.9, y : 10.1, z : -35, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -38.2, y : 10, z : -36, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -39.9, y : 10.1, z : -35.5, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -40.2, y : 10, z : -36, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -43, y : 10, z : -35.7, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -48, y : 10.1, z : -35.9, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -52, y : 10, z : -36, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -55, y : 10.1, z : -35.9, ease: SlowMo.ease.config(0.1, 0.1, false)});
+			mylarBalloonMixer.to(mylarBalloon.position, keyToKey, { x : -56, y : 9.8, z : -36.3, ease: SlowMo.ease.config(0.1, 0.1, false), repeat:-1, yoyo:true});
+		*/
 
 			mylarBalloonMixer.play();
 	//	mylarBalloon.rotation.y = 1;
-			scene.add(mylarBalloon);
-
-	var menuLoader = new THREE.OBJLoader( manager );
-		menuLoader.load( themePath + '/assets/menu-grid.obj', function ( object ) {
-					
-					object.name = "menu-grid";
-					object.traverse( function ( child ) {
-
-						if ( child instanceof THREE.Mesh ) {
-
-							child.material = new THREE.MeshLambertMaterial({ 
-														color: 0xD78081,
-														emissive : 0x000000,
-														shading: THREE.SmoothShading,
-														wireframe : true,
-														wireframeLinewidth : 2,
-
-											}); // specularMap, aoMap, (normalMap)
-							child.material.transparent = true;
-							child.material.opacity = 0;
-
-						}//color: 0xffffff, emissive : 0x66655e, specular: 0xd4c978, shininess: 42, shading: THREE.FlatShading
-
-					} );
-
-
-				object.position.y = 0.01;
-				scene.add(object);
-
-				}, onProgress, onError );
+			fgScene.add(mylarBalloon);
 
 		//for the future two canvasses on over the other with the content in between setting the top renderer to transparent background
-	renderer = new THREE.WebGLRenderer( { alpha: true, antialias : true } );
-	/* 
-	
-	renderer.setPixelRatio( window.devicePixelRatio );
-	renderer.setSize( window.innerWidth, window.innerHeight );
-	
-	*/
-	renderer.setPixelRatio( window.devicePixelRatio );
-	onWindowResize();
-	//renderer.setSize( window.innerWidth, window.innerHeight );
-	
-	backgroundView.appendChild( renderer.domElement );
+		
+		bgRenderer = new THREE.WebGLRenderer( { antialias : true } );
+		fgRenderer = new THREE.WebGLRenderer( { alpha: true, antialias : true } );
+		
+		onWindowResize();
+
+		backgroundView.appendChild( bgRenderer.domElement );
+		foregroundView.appendChild( fgRenderer.domElement );
+
+
+
 
 	
 }
 
 function onWindowResize() {
-
+				bgRenderer.setPixelRatio( window.devicePixelRatio );
+				fgRenderer.setPixelRatio( window.devicePixelRatio );
+				userAgent.pixelRatio = window.devicePixelRatio;
 				SCREEN_WIDTH = window.innerWidth;
 				SCREEN_HEIGHT = window.innerHeight;
 
@@ -333,9 +416,64 @@ function onWindowResize() {
 				
 				camera.position.y = 130 * widthRatio;
 
-				var interest = scene.getObjectByName( "camera_interest" );
-				var camMove = ( SCREEN_HEIGHT / 2 ) * widthRatio
-					camMove /= 5;
+				var interest = bgScene.getObjectByName( "camera_interest" );
+				var camMove = ( SCREEN_HEIGHT / 2 ) * widthRatio;
+
+				var fixRatio = 0;
+				switch(userAgent.browser) {
+
+					case "Chrome":
+							fixRatio = 5;
+					break;
+					case "Firefox":
+							fixRatio = 5.61;
+					break;
+					case "Safari":
+							fixRatio = 5.1;	
+					break;
+					case "Opera":
+							//??
+							fixRatio = 5.61;
+					break;
+					case "IE":
+							//??
+							fixRatio = 5.61;
+					break;
+				}
+				 // 3.61;
+
+				console.log( "device pixel ratio: ", window.devicePixelRatio, fixRatio, SCREEN_WIDTH, SCREEN_HEIGHT, userAgent.browser, userAgent.pixelRatio ); 
+				if(window.devicePixelRatio > 1) {
+							
+							if(SCREEN_HEIGHT > SCREEN_WIDTH) {
+								//portait
+								fixRatio *= heightRatio;
+							
+							} else {
+								//landscape
+								fixRatio *= heightRatio;
+							
+							}
+
+							
+							
+
+				} else if(window.devicePixelRatio > 2) {
+							if(SCREEN_HEIGHT > SCREEN_WIDTH) {
+								//portait
+								fixRatio *= heightRatio;
+
+							} else {
+								//landscape
+								fixRatio *= heightRatio;
+							}
+
+							console.log( "device pixel ratio: ", window.devicePixelRatio, fixRatio, SCREEN_WIDTH, SCREEN_HEIGHT ); 
+							
+							
+				}
+				
+				camMove /= fixRatio;
 					
 				//console.log("ratios:: width: " + widthRatio + " height: " + heightRatio, camMove);
 					
@@ -344,7 +482,8 @@ function onWindowResize() {
 					camera.position.z = interest.position.z;
 					camera.lookAt(interest.position);
 
-				renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+				fgRenderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+				bgRenderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
 				//camera.position = ;
 
 				/*var scaleObj = scene.getObjectByName( "bg-grid-1" );
@@ -376,7 +515,8 @@ function animate() {
 	requestAnimationFrame( animate );
 	//mesh.rotation.x += 0.01;
     //mesh.rotation.y += 0.02;
-	renderer.render( scene, camera );
+	bgRenderer.render( bgScene, camera );
+	fgRenderer.render( fgScene, camera );
 	//TWEEN.update();
 }
 
@@ -393,14 +533,13 @@ function menu(phase) {
 		paper = Snap("#svg-menu");
 		paper.attr({ viewBox : "0 0 565 500" });
 
-	var bgRect = paper.group( paper.rect(-100, 0, 20, 650).attr({"fill" : "#ffffff", "id" : "mouse-leave"}), paper.rect(-100, 600, 600, 20).attr({"fill" : "#ffffff", "id" : "mouse-leave"}) );
+	var bgRect = paper.group( paper.rect(-100, 0, 40, 650).attr({"fill" : "#ffffff", "id" : "mouse-leave"}), paper.rect(-100, 600, 600, 40).attr({"fill" : "#ffffff", "id" : "mouse-leave"}) );
 		//bgRect.attr("id", "mouse-leave");
 
 		bgRect.attr("opacity", "0");
 		
 		paper.append(bgRect);
 		
-		//
 		switch(phase) {
 			case "load":
 					var assetList = { menu : "menu-button", main : "main-button", sub : "sub-button", view : "view-button" };
@@ -511,9 +650,14 @@ function svgLoadEvent(event) {
 										subButtonAsset.transform("t" + (posArray[ d ][0] + 81) + "," + ( posArray[d][1] + 72 + (e  * 40) ) );
 										
 										subButtonAsset.select("text").attr({
-											"text" : menuItems[b].title
+											"text" : menuItems[b].title,
+											"opacity" : "0"
 										});
 										
+										subButtonAsset.select("g g g g:first-of-type circle:first-of-type").attr("r", "0");
+										subButtonAsset.select("g g g g:first-of-type circle:last-of-type").attr("r", "0");
+										subButtonAsset.select("g g g circle:first-of-type").attr("r", "0");
+
 										subButtonAsset.mouseover(mainMenuHandler);
 										subButtonAsset.mouseout(mainMenuHandler);
 										subButtonAsset.mousedown(mainMenuHandler);
@@ -584,6 +728,18 @@ function mainMenuHandler(event) {
 									break;
 
 									case "mouseup":
+
+											// lets fade in the red bg grid
+
+											menuGrid = fgScene.getObjectByName( "menu-grid" );
+											menuGrid.traverse( function ( child ) {
+											
+														if ( child instanceof THREE.Mesh ) {
+																				//child.material.opacity = 1;
+																				TweenLite.to(child.material, 1.21, { opacity: 0.61 });
+														}//color: 0xffffff, emissive : 0x66655e, specular: 0xd4c978, shininess: 42, shading: THREE.FlatShading
+												} );
+											
 											//fadein the main buttons
 											elem = paper.selectAll(".main-button-group")
 
@@ -591,10 +747,18 @@ function mainMenuHandler(event) {
 												el.attr({
 													'visibility': 'visible'
 												});
+
+												TweenLite.to(".main-button-cls-4", 1.21, { opacity: 1, delay: 1 });
+												//TweenLite.to(el.select("g g g g:first-of-type circle:first-of-type"), 1.21, { r: 27, delay: 1.21 });
+												//TweenLite.to(el.select("g g g g:first-of-type circle:last-of-type"), 1.21, { r: 5.5, delay: 1.21 });
+												//TweenLite.to(el.select("g g g circle:first-of-type"), 1.21, { r: 27, delay: 1.21 });
+												//TweenLite.to(  )
+												/*
 												el.select("text").animate({
 																	"opacity" : "1"},
 																	3031,
 																	mina.linear ); //, onAnimComplete
+												*/
 												el.select("g g g g:first-of-type circle:first-of-type").animate({
 																	"r" : "27"},
 																	1231,
@@ -608,16 +772,32 @@ function mainMenuHandler(event) {
 																	1231,
 																	mina.bounce );
 
-											} );
 
-											 	menuGrid = scene.getObjectByName( "menu-grid" );
-												menuGrid.traverse( function ( child ) {
+											});
 											
-														if ( child instanceof THREE.Mesh ) {
-																				//child.material.opacity = 1;
-																				TweenLite.to(child.material, 1.21, { opacity:1 });
-														}//color: 0xffffff, emissive : 0x66655e, specular: 0xd4c978, shininess: 42, shading: THREE.FlatShading
-												} );
+											// lets fade in the submenu
+											elem = paper.selectAll(".sub-button-group");
+											elem.forEach( function( el ) {
+												el.attr({
+													'visibility': 'visible'
+												});
+
+												TweenLite.to(".sub-button-cls-4", 1.21, { opacity: 1, delay: 1.5 });
+
+												el.select("g g g g:first-of-type circle:first-of-type").animate({
+																	"r" : "11.5"},
+																	1431,
+																	mina.bounce );
+												el.select("g g g g:first-of-type circle:last-of-type").animate({
+																	"r" : "2.83"},
+																	1431,
+																	mina.bounce );
+												el.select("g g g circle:first-of-type").animate({
+																	"r" : "11.5"},
+																	1431,
+																	mina.bounce );
+
+											});
 
 											//lets contract the menu when the user mouse leaves the area
 											paper.select("#mouse-leave").mouseover(mainMenuHandler);
@@ -639,7 +819,7 @@ function mainMenuHandler(event) {
 				switch(event.type) {
 					case "mouseover":
 								//lets contract the menu when the user mouse leaves the area
-								menuGrid = scene.getObjectByName( "menu-grid" );
+								menuGrid = fgScene.getObjectByName( "menu-grid" );
 								menuGrid.traverse( function ( child ) {
 											
 														if ( child instanceof THREE.Mesh ) {
@@ -668,6 +848,31 @@ function mainMenuHandler(event) {
 												el.select("g g g circle:first-of-type").animate({
 																	"r" : "0"},
 																	616,
+																	mina.bounce );
+
+											} );
+
+								elem = paper.selectAll(".sub-button-group")
+
+											elem.forEach( function( el ) {
+												el.attr({
+													'visibility': 'visible'
+												});
+												el.select("text").animate({
+																	"opacity" : "0"},
+																	1116,
+																	mina.linear ); //, onAnimComplete
+												el.select("g g g g:first-of-type circle:first-of-type").animate({
+																	"r" : "0"},
+																	316,
+																	mina.bounce );
+												el.select("g g g g:first-of-type circle:last-of-type").animate({
+																	"r" : "0"},
+																	316,
+																	mina.bounce );
+												el.select("g g g circle:first-of-type").animate({
+																	"r" : "0"},
+																	316,
 																	mina.bounce );
 
 											} );

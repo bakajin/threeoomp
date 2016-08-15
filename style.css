@@ -854,21 +854,35 @@ a:active {
 div#content div#primary {
 	/* turning off widgets and comments */
 	padding-top: 19%;
+	padding : 19% 13% 0% 13%;
+}
+
+div#content div#secondary {
+	/* turning off widgets and comments on the main page */
+	padding : 0% 13% 0% 13%;
 }
 
 body.blog div#content div#secondary {
-	/* turning off widgets and comments */
-
+	/* turning off widgets and comments on the main page */
 	display: none;
+}
+
+body.blog .hentry .entry-content {
+	display : none;
 }
 
 .sticky {
 	display: block;
 }
 
-.hentry {
-	margin : 0 13%; /* 0 0 1.5em */
+.hentry, nav.post-navigation, div.comments-area {
+	margin : 0 0 1.5% 0; /* 0 0 1.5em */*/
 
+}
+
+div.comments-area textarea {
+	background-color : rgba(255,255,255,0.3);
+	border : none;
 }
 
 .hentry h1 a {
@@ -915,7 +929,8 @@ body.blog .hentry p {
 
 .page-content,
 .entry-content,
-.entry-summary {
+.entry-summary,
+.featured-gallery {
 	margin: 1.5em 0 0;
 }
 
