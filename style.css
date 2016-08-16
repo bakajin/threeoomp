@@ -254,8 +254,8 @@ header.site-header {
 
 div.site-branding {
 	position: absolute;
-	left : 39%;
-	top : 7%;
+	left : 33%;
+	top : 9%;
 	line-height: 1.7em;
 }
 
@@ -541,7 +541,7 @@ a:active {
 
 .main-button-cls-1, .main-button-cls-2 {
 	stroke-miterlimit: 10;
-	stroke-width: 0.5px;
+	stroke-width: 0.05em;
 }
 
 .main-button-cls-2 {
@@ -571,7 +571,7 @@ a:active {
 	fill: #d78081;
 	stroke: #fff;
 	stroke-miterlimit: 10;
-	stroke-width: 0.5px;
+	stroke-width: 0.05em;
 }
 
 .sub-button-cls-1 {
@@ -603,7 +603,7 @@ a:active {
 
 .view-button-cls-2, .view-button-cls-3 {
 	stroke-miterlimit: 10;
-	stroke-width: 0.5px;
+	stroke-width: 0.05em;
 }
 
 .view-button-cls-3 {
@@ -888,6 +888,11 @@ body.blog .hentry .entry-content, body.archive .hentry .entry-content {
 
 .featured-gallery img {
 	position: absolute;
+	visibility: hidden;
+}
+
+.featured-gallery img.active-img {
+	visibility: visible;
 }
 
 .featured-gallery img:first-of-type {
@@ -927,13 +932,28 @@ div.comments-area textarea {
 body.blog .hentry p {
 	/* wordpress wraps images in a p elem so i cant use this yet*/ 
 }
- .entry-meta, .entry-footer {
+
+.entry-meta, .entry-footer {
  	font-size : 81%;
 }
 
 .entry-meta span a, .entry-footer span a {
  	text-decoration: none;
  	color: #61665E;
+}
+
+.post-navigation {
+	margin-bottom : 8%!important;
+}
+
+.post-navigation .nav-links .nav-previous {
+	float : left;
+	margin-left : 21%;
+}
+
+.post-navigation .nav-links .nav-next {
+	float : right;
+	margin-right : 21%;
 }
 
 .byline,
@@ -1016,6 +1036,11 @@ object {
 
 iframe {
 	width: 100%
+}
+.slideshow-window {
+	background-color: transparent!important;
+	border : none!important;
+	border-radius: 0px!important;
 }
 
 /*--------------------------------------------------------------

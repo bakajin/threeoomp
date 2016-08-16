@@ -43,14 +43,14 @@ function render() {
 }
 
 function init() {
-		console.log("init", navigator.userAgent);
+		//console.log("init", navigator.userAgent);
 		
 //maybe do in a separate function
 		var uA = navigator.userAgent;
 		
 		//lets check safari first, because chrome hold double values (Chrome and safari)
 		if(uA.search("Safari") != -1) {
-			console.log("Safari or Chrome");
+			console.log("Safari or Chrome is safari");
 			userAgent.browser = "Safari";
 		}
 		
@@ -114,13 +114,13 @@ function init() {
 	//set up manager
 	var manager = new THREE.LoadingManager();
 		manager.onProgress = function( item, loaded, total ) {
-			console.log( item, loaded, total );
+			//console.log( item, loaded, total );
 		};
 	// event listeners
 	var onProgress = function ( xhr ) {
 		if (xhr.lengthComputable) {
 			var percentComplete = xhr.loaded / xhr.total * 100;
-			console.log( Math.round(percentComplete, 2) + "% downloaded" );
+			//console.log( Math.round(percentComplete, 2) + "% downloaded" );
 		}
 	};
 
@@ -332,7 +332,7 @@ function init() {
 	
 
 		mylarBalloon.scale.x = 0.81;
-		mylarBalloon.scale.y = 0.81;
+		mylarBalloon.scale.y = 0.71;
 		mylarBalloon.scale.z = 0.81;
 
 		mylarBalloon.position.x = 0; // left to right
@@ -343,16 +343,23 @@ function init() {
 		var tweenType = "Power1.easeInOut";
 		//var tweenType = "Power.easeIn";
 		//up to the top in a wavey motion
-		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey * 6 ), { z : -36, ease: tweenType });
+		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey * 8 ), { z : -35.7, ease: Power1.easeIn }, 0);
 		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { x : 12, ease: tweenType, repeat : 2, yoyo : true }, 0);
 		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { y : 12, ease: tweenType, repeat : 2, yoyo : true }, 0);
-		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { x : 4, ease: tweenType, repeat : 3, yoyo : true }, (keyToKey * 2) );
-		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { y : 9, ease: tweenType, repeat : 3, yoyo : true }, (keyToKey * 2) );
+
+		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { x : 4, ease: tweenType, repeat : 2, yoyo : true }, (keyToKey * 4) );
+		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { y : 9, ease: tweenType, repeat : 3, yoyo : true }, (keyToKey * 4) );
 		
-		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey * 6 ), { x : -58, ease: tweenType });
+		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey * 10 ), { x : -58, ease: tweenType }, (keyToKey * 7) );
 		//mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { x : -58, ease: tweenType, repeat : -1, yoyo : true }, ( keyToKey * 6 + keyToKey * 6 ) );
-		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { y : 11, ease: tweenType, repeat : -1, yoyo : true }, ( keyToKey * 6 ) );
-		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { z : -35, ease: tweenType, repeat : -1, yoyo : true }, ( keyToKey * 6 ) );
+		
+		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { y : 9, ease: tweenType, repeat : 6, yoyo : true }, ( keyToKey * 4 ) );
+		//mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { z : -38, ease: tweenType, repeat : 5, yoyo : true }, ( keyToKey * 4 ) );
+		
+		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { x : -57.5, ease: tweenType, repeat : -1, yoyo : true }, ( keyToKey * 18 ) );
+		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { y : 11, ease: tweenType, repeat : -1, yoyo : true }, ( keyToKey * 8 ) );
+		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { z : -34.3, ease: tweenType, repeat : -1, yoyo : true }, ( keyToKey * 8 ) );
+
 		
 		//	mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey * 6 ), { x : -20, y : 10, z : -36, ease: tweenType2 });
 		//bounce up top
@@ -423,7 +430,7 @@ function onWindowResize() {
 				switch(userAgent.browser) {
 
 					case "Chrome":
-							fixRatio = 5;
+							fixRatio = 5.4;
 					break;
 					case "Firefox":
 							fixRatio = 5.61;
@@ -455,9 +462,6 @@ function onWindowResize() {
 							
 							}
 
-							
-							
-
 				} else if(window.devicePixelRatio > 2) {
 							if(SCREEN_HEIGHT > SCREEN_WIDTH) {
 								//portait
@@ -484,28 +488,10 @@ function onWindowResize() {
 
 				fgRenderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
 				bgRenderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
-				//camera.position = ;
 
-				/*var scaleObj = scene.getObjectByName( "bg-grid-1" );
-					scaleObj.scale.x = heightRatio;
-					scaleObj.scale.z = heightRatio;
-					console.log("pos shift1 : " + scaleObj.position.z)
-					scaleObj.position.z = 10 * heightRatio;
-					console.log("pos shift2 : " + scaleObj.position.z)
-				//	scaleObj.scale.z = 10;
-
-					scaleObj = scene.getObjectByName( "bg-grid-2" );
-					scaleObj.scale.x = heightRatio;
-					scaleObj.scale.z = heightRatio;
-					scaleObj.position.z = 10 * heightRatio;
-				//	
-					scaleObj = scene.getObjectByName( "menu-grid" );
-					scaleObj.scale.x = heightRatio;
-					scaleObj.scale.z = heightRatio;
-					scaleObj.position.z = 10 * heightRatio;
-				//	
-				*/
-				
+				var setFeaturedGalleryHeight = jQuery(".featured-gallery").innerWidth() * (9 / 16);
+					jQuery(".featured-gallery").css("height", setFeaturedGalleryHeight);
+				//console.log("would be nice if this worked ", setFeaturedGalleryHeight);
 
 }
 
@@ -513,7 +499,6 @@ function animate() {
 	//console.log("animate");
 	//animate stuff
 	requestAnimationFrame( animate );
-	//mesh.rotation.x += 0.01;
     //mesh.rotation.y += 0.02;
 	bgRenderer.render( bgScene, camera );
 	fgRenderer.render( fgScene, camera );
@@ -533,7 +518,7 @@ function menu(phase) {
 		paper = Snap("#svg-menu");
 		paper.attr({ viewBox : "0 0 565 500" });
 
-	var bgRect = paper.group( paper.rect(-100, 0, 40, 650).attr({"fill" : "#ffffff", "id" : "mouse-leave"}), paper.rect(-100, 600, 600, 40).attr({"fill" : "#ffffff", "id" : "mouse-leave"}) );
+	var bgRect = paper.group( paper.rect(-200, 0, 60, 750).attr({"fill" : "#ffffff", "id" : "mouse-leave"}), paper.rect(-200, 600, 750, 60).attr({"fill" : "#ffffff", "id" : "mouse-leave"}) );
 		//bgRect.attr("id", "mouse-leave");
 
 		bgRect.attr("opacity", "0");
@@ -645,7 +630,8 @@ function svgLoadEvent(event) {
 				case "sub-button-group":
 							var d = 0;
 							var e = 0;
-							var previousParent = 14;
+							
+							var previousParent = menuItems[0].idx;//14
 
 							for(b = 0; b < menuItems.length; b++) { 
 								//check if we are dealing with a sub menu item 
@@ -694,7 +680,7 @@ function svgLoadEvent(event) {
 										paper.append(subButtonAsset);
 
 									e++;
-									console.log(menuItems[b].idx, menuItems[b].parent, menuItems[b].title, menuItems[b].url, menuItems[b].guid, posArray[d], d);
+									//console.log(menuItems[b].idx, menuItems[b].parent, menuItems[b].title, menuItems[b].url, menuItems[b].guid, posArray[d], d);
 									
 								}
 							}
@@ -723,7 +709,7 @@ function svgLoadEvent(event) {
 
 function mainMenuHandler(event) {
 
-		console.log("!: ", event.target.id);
+		//console.log("!: ", event.target.id);
 		paper = Snap("#svg-menu");
 		
 		var elem;
@@ -733,7 +719,7 @@ function mainMenuHandler(event) {
 		case "menu-button-hit":
 						switch(event.type) {
 									case "mouseover":
-											console.log("over");
+											//console.log("over");
 											elem = paper.select("#" + event.target.id);
 											elem.animate({	
 												"stroke-width" : "11"
@@ -742,7 +728,7 @@ function mainMenuHandler(event) {
 									break;
 
 									case "mouseout":
-											console.log("out")
+											//console.log("out")
 												elem = paper.select("#" + event.target.id);
 												elem.animate({	
 													"stroke-width" : "0.5"
@@ -938,12 +924,101 @@ function mainMenuHandler(event) {
 		default:
 			var id = event.target.id;
 				id = id.substr(id.lastIndexOf("-") + 1);
-			console.log(event, id, event.target.className.baseVal);
+			//console.log(event, id, event.target.className.baseVal);
 			switch(event.target.className.baseVal) {
 				case "main-button-hit":
 							switch(event.type) {
 								case "mouseup":
-												jQuery("li#menu-item-" + id + " a")[0].click();
+											jQuery("li#menu-item-" + id + " a")[0].click();
+
+											//lets contract the menu when the user clicks a button
+											menuGrid = fgScene.getObjectByName( "menu-grid" );
+											menuGrid.traverse( function ( child ) {
+											
+														if ( child instanceof THREE.Mesh ) {
+																				//child.material.opacity = 1;
+																				TweenLite.to(child.material, 1.21, { opacity: 0 });
+														}//color: 0xffffff, emissive : 0x66655e, specular: 0xd4c978, shininess: 42, shading: THREE.FlatShading
+												} );
+											elem = paper.selectAll(".main-button-group")
+
+													elem.forEach( function( el ) {
+															el.attr({
+																	'visibilxity': 'visible'
+															});
+
+													el.select("rect").attr({
+													'visibility': 'hidden'
+													});
+
+													el.select("text").animate({
+																		"opacity" : "0"},
+																		1516,
+																		mina.linear ); //, onAnimComplete
+													el.select("g g g g:first-of-type circle:first-of-type").animate({
+																		"r" : "0"},
+																		616,
+																		mina.bounce );
+													el.select("g g g g:first-of-type circle:last-of-type").animate({
+																		"r" : "0"},
+																		616,
+																		mina.bounce );
+													el.select("g g g circle:first-of-type").animate({
+																	"r" : "0"},
+																	616,
+																	mina.bounce );
+
+											} );
+
+											elem = paper.selectAll(".sub-button-group")
+
+													elem.forEach( function( el ) {
+															el.attr({
+																'visibility': 'visible'
+															});
+
+															el.select("rect").attr({
+																	'visibility': 'hidden'
+															});
+
+															el.select("text").animate({
+																			"opacity" : "0"},
+																			816,
+																			mina.linear ); //, onAnimComplete
+															el.select("g g g g:first-of-type circle:first-of-type").animate({
+																			"r" : "0"},
+																			216,
+																			mina.bounce );
+															el.select("g g g g:first-of-type circle:last-of-type").animate({
+																			"r" : "0"},
+																			216,
+																			mina.bounce );
+															el.select("g g g circle:first-of-type").animate({
+																			"r" : "0"},
+																			216,
+																			mina.bounce );
+
+													} );
+
+											
+											paper.unmouseout(mainMenuHandler);
+
+								break;
+
+								case "mouseover":
+										//console.log("over");
+											elem = paper.select("#main-button-" + id + " g g g circle");
+											elem.animate({	
+												"stroke-width" : "7"
+											}, 331, mina.bounce ); //, onAnimComplete
+								break;
+
+								case "mouseout":
+										//console.log("out");
+											elem = paper.select("#main-button-" + id + " g g g circle");
+											elem.animate({	
+												"stroke-width" : "0.5"
+											}, 331, mina.bounce ); //, onAnimComplete
 								break;
 								default:
 										console.log(event.type);
@@ -955,8 +1030,97 @@ function mainMenuHandler(event) {
 				case "sub-button-hit":
 							switch(event.type) {
 								case "mouseup":
-												jQuery("li#menu-item-" + id + " a")[0].click();
+											jQuery("li#menu-item-" + id + " a")[0].click();
+
+											//lets contract the menu when the user clicks a button
+											menuGrid = fgScene.getObjectByName( "menu-grid" );
+											menuGrid.traverse( function ( child ) {
+											
+														if ( child instanceof THREE.Mesh ) {
+																				//child.material.opacity = 1;
+																				TweenLite.to(child.material, 1.21, { opacity: 0 });
+														}//color: 0xffffff, emissive : 0x66655e, specular: 0xd4c978, shininess: 42, shading: THREE.FlatShading
+												} );
+											elem = paper.selectAll(".main-button-group")
+
+													elem.forEach( function( el ) {
+															el.attr({
+																	'visibilxity': 'visible'
+															});
+
+													el.select("rect").attr({
+													'visibility': 'hidden'
+													});
+
+													el.select("text").animate({
+																		"opacity" : "0"},
+																		1516,
+																		mina.linear ); //, onAnimComplete
+													el.select("g g g g:first-of-type circle:first-of-type").animate({
+																		"r" : "0"},
+																		616,
+																		mina.bounce );
+													el.select("g g g g:first-of-type circle:last-of-type").animate({
+																		"r" : "0"},
+																		616,
+																		mina.bounce );
+													el.select("g g g circle:first-of-type").animate({
+																	"r" : "0"},
+																	616,
+																	mina.bounce );
+
+											} );
+
+											elem = paper.selectAll(".sub-button-group")
+
+													elem.forEach( function( el ) {
+															el.attr({
+																'visibility': 'visible'
+															});
+
+															el.select("rect").attr({
+																	'visibility': 'hidden'
+															});
+
+															el.select("text").animate({
+																			"opacity" : "0"},
+																			816,
+																			mina.linear ); //, onAnimComplete
+															el.select("g g g g:first-of-type circle:first-of-type").animate({
+																			"r" : "0"},
+																			216,
+																			mina.bounce );
+															el.select("g g g g:first-of-type circle:last-of-type").animate({
+																			"r" : "0"},
+																			216,
+																			mina.bounce );
+															el.select("g g g circle:first-of-type").animate({
+																			"r" : "0"},
+																			216,
+																			mina.bounce );
+
+													} );
+
+											
+											paper.unmouseout(mainMenuHandler);
+
 								break;
+								case "mouseover":
+										//console.log("over");
+											elem = paper.select("#sub-button-" + id + " g g g circle");
+											elem.animate({	
+												"stroke-width" : "4"
+											}, 331, mina.bounce ); //, onAnimComplete
+								break;
+
+								case "mouseout":
+										//console.log("out");
+											elem = paper.select("#sub-button-" + id + " g g g circle");
+											elem.animate({	
+												"stroke-width" : "0.5"
+											}, 331, mina.bounce ); //, onAnimComplete
+								break;
+								
 								default:
 										console.log(event.type);
 								break;

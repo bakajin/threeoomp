@@ -14,7 +14,6 @@
 		</div><!-- .entry-meta -->
 		<?php endif; ?>
 	</header><!-- .entry-header -->
-	
 		<?php
 			/* do the featured gallery 
 					cycle on mouseover 
