@@ -95,6 +95,8 @@ function oompthree_scripts() {
 	wp_enqueue_style( 'oompthree-style', get_stylesheet_uri() );
 
 	//wp_enqueue_script( 'oompthree-navigation', get_template_directory_uri() . '/js/navigation.js', array(), '20120206', true );
+	wp_register_script('jQuery', 'https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js');
+	wp_enqueue_script('jQuery');
 
 	wp_enqueue_script( 'oompthree-skip-link-focus-fix', get_template_directory_uri() . '/js/skip-link-focus-fix.js', array(), '20130115', true );
 
@@ -135,6 +137,15 @@ add_action('wp_enqueue_scripts','oompthree_custom_scripts');
  */
 //require get_template_directory() . '/inc/custom-header.php';
 
+/** 
+ *	remove the stupid admin bar space
+ *  https://davidwalsh.name/remove-wordpress-admin-bar-css
+*/
+add_action('get_header', 'remove_admin_login_header');
+
+function remove_admin_login_header() {
+	remove_action('wp_head', '_admin_bar_bump_cb');
+}
 /**
  * Custom template tags for this theme.
  */

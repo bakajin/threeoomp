@@ -77,13 +77,15 @@ function oompthree_posted_on() {
 		esc_attr( get_the_modified_date( 'c' ) ),
 		esc_html( get_the_modified_date() )
 	);
-	/* 
+	
 	//Posted on %s
 	$posted_on = sprintf(
 		_x( '%s', 'post date', oompthree ),
 		'<a href="' . esc_url( get_permalink() ) . '" rel="bookmark">' . $time_string . '</a>'
 	);
-	*/
+	
+	echo '<span class="posted-on">On ' . $posted_on . '</span>';
+
 	$byline = sprintf(
 		_x( 'by %s', 'post author', oompthree ),
 		'<span class="author vcard"><a class="url fn n" href="' . esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ) . '">' . esc_html( get_the_author() ) . '</a></span>'
@@ -127,7 +129,7 @@ function oompthree_entry_footer() {
 			_x( '%s', 'post date', oompthree ),
 			'<a href="' . esc_url( get_permalink() ) . '" rel="bookmark">' . $time_string . '</a>'
 		);
-		echo '<span class="posted-on"> on ' . $posted_on . '</span><span class="byline"> ' . $byline . '</span>';
+		//echo '<span class="posted-on"> on ' . $posted_on . '</span><span class="byline"> ' . $byline . '</span>';
 		/* translators: used between list items, there is a space after the comma */
 		/* 
 		$categories_list = get_the_category_list( __( ', ', oompthree ) );

@@ -14,6 +14,7 @@ var SCREEN_HEIGHT = window.innerHeight;
 var widthRatio = SCREEN_HEIGHT / SCREEN_WIDTH;
 var heightRatio = SCREEN_WIDTH / SCREEN_HEIGHT;
 
+var offsetValue = 0;
 var scene, camera, renderer, directionalLight, hemisphereLight, ambientLight;
 
 var bgScene, fgScene;
@@ -43,48 +44,21 @@ function render() {
 }
 
 function init() {
-		//console.log("init", navigator.userAgent);
+		console.log("init", navigator.userAgent);
 		
 //maybe do in a separate function
-		var uA = navigator.userAgent;
-		
-		//lets check safari first, because chrome hold double values (Chrome and safari)
-		if(uA.search("Safari") != -1) {
-			console.log("Safari or Chrome is safari");
-			userAgent.browser = "Safari";
-		}
-		
-		if(uA.search("Chrome") != -1) {
-			console.log("Chrome");
-			userAgent.browser = "Chrome";
-		}
-
-		if(uA.search("Firefox") != -1) {
-			console.log("Firefox");
-			userAgent.browser = "Firefox";
-		}
-
-		if(uA.search("Opera") != -1) {
-			console.log("Opera");
-			userAgent.browser = "Opera";
-		}
-
-		if(uA.search("Internet Explorer") != -1) {
-			console.log("Explorer");
-			userAgent.browser = "IE";
-		}
 
 		backgroundView = document.getElementById('threed-background');
 		foregroundView = document.getElementById('threed-foreground');
 		
 		scene = new THREE.Scene();
-		scene.background = 0xffffff;
+		//scene.background = 0xffffff;
 
 		bgScene = new THREE.Scene();
-		bgScene.background = 0xffffff;
+		//bgScene.background = 0xffffff;
 
 		fgScene = new THREE.Scene();
-
+		//fgScene.background = 0xffffff;
 		//Fog( hex, near, far )
 		//scene.fog = new THREE.Fog( 0xffffff, 1, 450);
 		
@@ -332,7 +306,7 @@ function init() {
 	
 
 		mylarBalloon.scale.x = 0.81;
-		mylarBalloon.scale.y = 0.71;
+		mylarBalloon.scale.y = 0.61;
 		mylarBalloon.scale.z = 0.81;
 
 		mylarBalloon.position.x = 0; // left to right
@@ -393,7 +367,7 @@ function init() {
 
 		//for the future two canvasses on over the other with the content in between setting the top renderer to transparent background
 		
-		bgRenderer = new THREE.WebGLRenderer( { antialias : true } );
+		bgRenderer = new THREE.WebGLRenderer( { alpha: true, antialias : true } );
 		fgRenderer = new THREE.WebGLRenderer( { alpha: true, antialias : true } );
 		
 		onWindowResize();
@@ -408,80 +382,36 @@ function init() {
 }
 
 function onWindowResize() {
-				bgRenderer.setPixelRatio( window.devicePixelRatio );
-				fgRenderer.setPixelRatio( window.devicePixelRatio );
-				userAgent.pixelRatio = window.devicePixelRatio;
+				
+				bgRenderer.setPixelRatio( userAgent.pixelRatio );
+				fgRenderer.setPixelRatio( userAgent.pixelRatio );
+				//userAgent.pixelRatio = window.devicePixelRatio;
 				SCREEN_WIDTH = window.innerWidth;
-				SCREEN_HEIGHT = window.innerHeight;
+				SCREEN_HEIGHT = window.innerHeight * 1.3;
 
 				widthRatio = SCREEN_HEIGHT / SCREEN_WIDTH;
 				heightRatio = SCREEN_WIDTH / SCREEN_HEIGHT;
 
-				camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
+				camera.aspect = heightRatio;
 				camera.updateProjectionMatrix();
 
 				
-				camera.position.y = 130 * widthRatio;
+				camera.position.y = 130 * widthRatio; //90
 
 				var interest = bgScene.getObjectByName( "camera_interest" );
-				var camMove = ( SCREEN_HEIGHT / 2 ) * widthRatio;
-
-				var fixRatio = 0;
-				switch(userAgent.browser) {
-
-					case "Chrome":
-							fixRatio = 5.4;
-					break;
-					case "Firefox":
-							fixRatio = 5.61;
-					break;
-					case "Safari":
-							fixRatio = 5.1;	
-					break;
-					case "Opera":
-							//??
-							fixRatio = 5.61;
-					break;
-					case "IE":
-							//??
-							fixRatio = 5.61;
-					break;
-				}
-				 // 3.61;
-
-				console.log( "device pixel ratio: ", window.devicePixelRatio, fixRatio, SCREEN_WIDTH, SCREEN_HEIGHT, userAgent.browser, userAgent.pixelRatio ); 
-				if(window.devicePixelRatio > 1) {
-							
-							if(SCREEN_HEIGHT > SCREEN_WIDTH) {
-								//portait
-								fixRatio *= heightRatio;
-							
-							} else {
-								//landscape
-								fixRatio *= heightRatio;
-							
-							}
-
-				} else if(window.devicePixelRatio > 2) {
-							if(SCREEN_HEIGHT > SCREEN_WIDTH) {
-								//portait
-								fixRatio *= heightRatio;
-
-							} else {
-								//landscape
-								fixRatio *= heightRatio;
-							}
-
-							console.log( "device pixel ratio: ", window.devicePixelRatio, fixRatio, SCREEN_WIDTH, SCREEN_HEIGHT ); 
-							
-							
-				}
 				
-				camMove /= fixRatio;
+				//seeing as the ratio of the screen wont change lets keep it all 16:9
+			//	var staticWidthRatio = 9 / 16;
+			//	var staticHeightRatio = 16 / 9;
+			//	var camMove = (SCREEN_WIDTH / -130) * widthRatio;
+
+				checkClient();
+				
+				//camMove /= userAgent.camZ;
 					
-				//console.log("ratios:: width: " + widthRatio + " height: " + heightRatio, camMove);
+				console.log("ratios:: width: " + widthRatio + " height: " + heightRatio, interest.position.z);
 					
-					interest.position.z = -55 + camMove;
+					interest.position.z = -6 * heightRatio; //-15//20 + -1 * widthRatio; //(SCREEN_WIDTH / 130) * widthRatio//= camMove; //camMove; // -55 + 
 
 					camera.position.z = interest.position.z;
 					camera.lookAt(interest.position);
@@ -489,10 +419,406 @@ function onWindowResize() {
 				fgRenderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
 				bgRenderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
 
-				var setFeaturedGalleryHeight = jQuery(".featured-gallery").innerWidth() * (9 / 16);
-					jQuery(".featured-gallery").css("height", setFeaturedGalleryHeight);
-				//console.log("would be nice if this worked ", setFeaturedGalleryHeight);
+				
+				var containerOffset = offsetVal;// offSetVal * widthRatio;
+				console.log("containerOffset: ", containerOffset);
+					containerOffset += "px";
+					jQuery("#threed-background").css("top", containerOffset);
+					jQuery("#threed-foreground").css("top", containerOffset);
 
+
+				var setFeaturedGalleryHeight = jQuery(".featured-gallery").innerWidth() * (3 / 4);//(9 / 16);
+					jQuery(".featured-gallery").css("height", setFeaturedGalleryHeight);
+				
+
+}
+
+function checkClient() {
+
+		var uA = navigator.userAgent;
+		
+		SCREEN_WIDTH = window.innerWidth;
+		SCREEN_HEIGHT = window.innerHeight * 1.3;
+
+		//lets check safari first, because chrome hold double values (Chrome and safari)
+		if(uA.search("Safari") != -1) {
+			//console.log("Safari or Chrome is safari");
+			userAgent.browser = "Safari";
+		}
+		
+		if(uA.search("Chrome") != -1) {
+			//console.log("Chrome");
+			userAgent.browser = "Chrome";
+		}
+
+		if(uA.search("Firefox") != -1) {
+			//console.log("Firefox");
+			userAgent.browser = "Firefox";
+		}
+
+		if(uA.search("Opera") != -1) {
+			//console.log("Opera");
+			userAgent.browser = "Opera";
+		}
+
+		if(uA.search("Internet Explorer") != -1) {
+			//console.log("Explorer");
+			userAgent.browser = "IE";
+		}
+
+		if(uA.search("iPhone") != -1) {
+			//console.log("iphone");
+			userAgent.device = "iPhone";
+		}
+
+		if(uA.search("iPad") != -1) {
+			//console.log("ipad");
+			userAgent.device = "iPad";
+		}
+
+		if(uA.search("Intel Mac") != -1) {
+			//console.log("mac");
+			userAgent.device = "mac";
+		}
+
+		userAgent.pixelRatio = window.devicePixelRatio;
+		
+				switch(userAgent.browser) {
+
+					case "Chrome":
+							offsetVal = (SCREEN_WIDTH - SCREEN_HEIGHT) * 0.6;
+					break;
+					case "Firefox":
+							//fixRatio = 5.65;
+					break;
+					case "Safari":
+							//fixRatio = 5; //5.1	
+					break;
+					case "Opera":
+							//??
+							//fixRatio = 5.65;
+					break;
+					case "IE":
+							//??
+							//fixRatio = 5.65;
+					break;
+					default:
+							//??
+							//fixRatio = 5.65;
+					break;
+				}
+				 // 3.61;
+				//console.log("use container ratio!!! : ",jQuery("#threed-background").innerHeight());
+				console.log( "useragent: ", userAgent.pixelRatio, userAgent.browser, userAgent.device ); 
+				console.log( "\t\t\t width height, width ratio, height ratio ", SCREEN_WIDTH, SCREEN_HEIGHT, widthRatio, heightRatio);
+				
+			
+
+								if(SCREEN_WIDTH >= 320) {
+									//iphone 4s in portrait
+									console.log("iphone4");
+									offsetVal = SCREEN_WIDTH * -0.8;
+									switch(userAgent.device) {
+										case "iPhone":
+
+										break;
+										
+										default:
+
+										break;
+
+									}
+								}
+								if(SCREEN_WIDTH >= 320 && SCREEN_HEIGHT >= 568) {
+									//iphone 5s in portrait
+									console.log("iphone5 porttrait ");
+									offsetVal = SCREEN_WIDTH * -0.8;
+
+									switch(userAgent.device) {
+										case "iPhone":
+												offsetVal = SCREEN_WIDTH * -0.825;
+										break;
+
+										default:
+
+										break;
+
+									}
+								}
+								if(SCREEN_WIDTH >= 375) {
+									//iphone 6s in portrait
+									console.log("iphone6s");
+									offsetVal = SCREEN_WIDTH * -0.8;
+									switch(userAgent.device) {
+										case "iPhone":
+
+										break;
+										
+										default:
+
+										break;
+
+									}
+								}
+								if(SCREEN_WIDTH >= 414) {
+									//iphone 6s+ in portrait
+									console.log("iphone6s +");
+									offsetVal = SCREEN_WIDTH * -0.8;
+									switch(userAgent.device) {
+										case "iPhone":
+
+										break;
+										
+										default:
+
+										break;
+
+									}
+								}
+								if(SCREEN_WIDTH >= 480) {
+									//iphone 4s in landscape
+									console.log("480+");
+									offsetVal = SCREEN_WIDTH * -0.8;
+									switch(userAgent.device) {
+										case "iPhone":
+
+										break;
+										
+										default:
+
+										break;
+
+									}
+								}
+								if(SCREEN_WIDTH >= 568) {
+									//iphone 5s in landscape
+									console.log("480+");
+									offsetVal = SCREEN_WIDTH * -0.8;
+									switch(userAgent.device) {
+										case "iPhone":
+												offsetVal = SCREEN_WIDTH * -0.1;
+										break;
+										
+										default:
+
+										break;
+
+									}
+								}
+
+								if(SCREEN_WIDTH >= 640) {
+									//
+									console.log("640+");
+									offsetVal = SCREEN_WIDTH * -0.5;
+								}
+								if(SCREEN_WIDTH >= 667) {
+									//iphone 6s in landscape
+									console.log("640+");
+									offsetVal = SCREEN_WIDTH * -0.5;
+									switch(userAgent.device) {
+										case "iPhone":
+
+										break;
+										
+										default:
+
+										break;
+
+									}
+								}
+								if(SCREEN_WIDTH >= 736) {
+									//iphone 6s+ in landscape
+									console.log("640+");
+									offsetVal = SCREEN_WIDTH * -0.5;
+									switch(userAgent.device) {
+										case "iPhone":
+
+										break;
+										
+										default:
+
+										break;
+
+									}
+								}
+
+								if(SCREEN_WIDTH >= 768) {
+									// ipad mini or air
+									console.log("ipad mini or air2");
+
+									switch(userAgent.browser) {
+										case "Safari":
+												offsetVal = SCREEN_WIDTH * -0.4;
+									
+										break;
+										case "Chrome":
+												offsetVal = SCREEN_WIDTH * -0.4;
+									
+										break;
+										default:
+												offsetVal = SCREEN_WIDTH * -0.4;
+									
+										break;
+									}
+									switch(userAgent.device) {
+										case "iPad":
+
+										break;
+										
+										default:
+
+										break;
+
+									}
+								}
+
+								if(SCREEN_WIDTH >= 800) {
+									switch(userAgent.browser) {
+										case "Safari":
+												offsetVal = SCREEN_WIDTH * -0.2;
+										break;
+										case "Chrome":
+												offsetVal = SCREEN_WIDTH * -0.2;
+										break;
+										default:
+												offsetVal = SCREEN_WIDTH * -0.2;
+										break;
+									}
+									
+								}
+								if(SCREEN_WIDTH >= 1024) {
+									switch(userAgent.browser) {
+										case "Safari":
+												//fixRatio = heightRatio / -0.09;
+												offsetVal = SCREEN_WIDTH * -0.09;
+										break;
+										case "Chrome":
+												//fixRatio = heightRatio / -0.02;
+												offsetVal = SCREEN_WIDTH * -0.09;
+										break;
+										default:
+												offsetVal = SCREEN_WIDTH * -0.09;
+										break;
+									}
+									switch(userAgent.device) {
+										case "iPad":
+
+										break;
+										
+										default:
+
+										break;
+
+									}
+									
+								}
+
+								if(SCREEN_WIDTH >= 1280) {
+									switch(userAgent.browser) {
+										case "Safari":
+												offsetVal = SCREEN_WIDTH * -0.07;
+										break;
+										case "Chrome":
+												offsetVal = SCREEN_WIDTH * -0.07;
+										break;
+										default:
+												offsetVal = SCREEN_WIDTH * -0.07;
+										break;
+									}
+									
+								}
+
+								if(SCREEN_WIDTH >= 1366) {
+									switch(userAgent.browser) {
+										case "Safari":
+												offsetVal = SCREEN_WIDTH * -0.07;
+										break;
+										case "Chrome":
+												offsetVal = SCREEN_WIDTH * -0.07;
+										break;
+										default:
+												offsetVal = SCREEN_WIDTH * -0.07;
+										break;
+									}
+									switch(userAgent.device) {
+										case "iPad":
+
+										break;
+										case "mac":
+
+										break;
+										
+										default:
+
+										break;
+
+									}
+									
+								}
+								if(SCREEN_WIDTH >= 1440) {
+									switch(userAgent.browser) {
+										case "Safari":
+												offsetVal = SCREEN_WIDTH * heightRatio * -0.4;
+										break;
+										case "Chrome":
+												offsetVal = SCREEN_WIDTH * heightRatio * -0.4;
+										break;
+										default:
+												offsetVal = SCREEN_WIDTH * heightRatio * -0.4;
+										break;
+									}
+									
+								}
+								if(SCREEN_WIDTH >= 1600) {
+									switch(userAgent.browser) {
+										case "Safari":
+												offsetVal = (SCREEN_WIDTH - SCREEN_HEIGHT) * -0.35;
+										break;
+										case "Chrome":
+												offsetVal = (SCREEN_WIDTH - SCREEN_HEIGHT) * -0.35;
+										break;
+										default:
+												offsetVal = (SCREEN_WIDTH - SCREEN_HEIGHT) * -0.35;
+										break;
+									}
+									
+								}
+								if(SCREEN_WIDTH >= 1920) {
+									//iphone 4s
+									console.log("macbookpro 15?");
+									switch(userAgent.browser) {
+										case "Safari":
+												offsetVal = (SCREEN_WIDTH - SCREEN_HEIGHT) * -0.3;
+										break;
+										case "Chrome":
+												offsetVal = (SCREEN_WIDTH - SCREEN_HEIGHT) * -0.3;
+										break;
+										default:
+												offsetVal = (SCREEN_WIDTH - SCREEN_HEIGHT) * -0.3;
+										break;
+									}
+									
+								}
+								if(SCREEN_WIDTH >= 2560) {
+									switch(userAgent.browser) {
+										case "Safari":
+												
+												offsetVal = (SCREEN_WIDTH - SCREEN_HEIGHT) * -0.1;
+										break;
+										case "Chrome":
+												
+												offsetVal = (SCREEN_WIDTH - SCREEN_HEIGHT) * -0.1;
+										break;
+										default:
+												offsetVal = (SCREEN_WIDTH - SCREEN_HEIGHT) * -0.1;
+										break;
+									}
+									
+								}
+							
+
+			
+				//userAgent.camZ = fixRatio;
 }
 
 function animate() {

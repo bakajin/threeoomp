@@ -19,6 +19,7 @@
 					cycle on mouseover 
 			*/
 			echo '<div id="featured-gallery-' . $post->ID .'" class="featured-gallery">';
+			echo '<a href="' . get_permalink( $post->ID ) .'">';
 			$galleryArray = get_post_gallery_ids($post->ID); 
 			$num = 0;
 			foreach ($galleryArray as $id) { 
@@ -34,6 +35,7 @@
 
 			
 		?>
+	</a>
 	</div>
 	<div class="entry-content">
 		<?php

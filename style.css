@@ -72,6 +72,8 @@ html {
 	overflow-y: scroll; /* Keeps page centered in all browsers regardless of content height */
 	-webkit-text-size-adjust: 100%; /* Prevents iOS text size adjust after orientation change, without disabling user zoom */
 	-ms-text-size-adjust:     100%; /* www.456bereastreet.com/archive/201012/controlling_text_size_in_safari_for_ios_without_disabling_user_zoom/ */
+	width : 100%;
+	height : 100%;
 }
 
 *,
@@ -84,6 +86,8 @@ html {
 
 body {
 	background: #fff; /* Fallback for when there is no custom background color defined. */
+	width : 100%;
+	height : 100%;
 }
 
 article,
@@ -254,7 +258,7 @@ header.site-header {
 
 div.site-branding {
 	position: absolute;
-	left : 33%;
+	left : 22.5%;
 	top : 9%;
 	line-height: 1.7em;
 }
@@ -271,16 +275,22 @@ div.site-branding h2{
 	font-weight : 500;
 	text-decoration: none;
 	color : #31332F;
+	margin-left : 0!important;
+	margin-right : 0!important;
 }
 
 #threed-background {
 	position: fixed;
+	top : 0%;
 	z-index: -1;
 	width : 100%;
 	height : 100%;
+
 }
+
 #threed-foreground {
 	position: fixed;
+	top : 0%;
 	z-index: 98;
 	width : 100%;
 	height : 100%;
@@ -298,6 +308,25 @@ div.entry-content p {
 	font-size: 100%;
 	font-weight : 400;
 	color : #61665E;
+}
+
+
+body.single div.entry-content p, body.single header.entry-header,
+body.page div.entry-content p, body.page header.entry-header, 
+body.page h2, body.page h3, body.page h4, body.page h5,
+body.page div.entry-content div#contact-form-320,
+body.page div.entry-content div#contact-form-514 {
+	margin-left : 13%;
+	margin-right: 13%;
+}
+
+body.page h5 {
+	margin-bottom : 4.5%;
+}
+
+body.single div.entry-content div p.contact-submit {
+	float : right;
+	margin-right: 20%;
 }
 
 hr {
@@ -493,10 +522,11 @@ a:active {
 /* svg-menu styles */
 #svg-menu {
 	overflow: visible;
-	width : 32%;
 	position: fixed;
-	right : -5%;
 	z-index: 99;
+	width : 32%;
+	right : -5%;
+	top : 0%;
 }
 
 #svg-menu g {
@@ -699,6 +729,106 @@ a:active {
 	display: none;
 }
 
+
+@media screen and (max-width: 1920px) {
+	#svg-menu {
+
+		width : 32%!important;
+		right : -5%!important;
+		top : 0%;
+	}
+
+	#threed-background {
+		top : 0%;
+	}
+
+	#threed-foreground {
+		top : 0%;
+		}
+}
+@media screen and (max-width: 1600px) {
+	#svg-menu {
+
+		width : 32%!important;
+		right : -5%!important;
+		top : 0%;
+	}
+
+	#threed-background {
+		top : -4%;
+	}
+
+	#threed-foreground {
+		top : -4%;
+		}
+}
+@media screen and (max-width: 1440px) {
+	#svg-menu {
+
+		width : 32%!important;
+		right : -5%!important;
+		top : 0%;
+	}
+
+	#threed-background {
+		top : -6%;
+	}
+
+	#threed-foreground {
+		top : -6%;
+		}
+}
+@media screen and (max-width: 1280px) {
+	#svg-menu {
+
+		width : 32%!important;
+		right : -5%!important;
+		top : 0%;
+	}
+
+	#threed-background {
+		top : -12%;
+	}
+
+	#threed-foreground {
+		top : -12%;
+	}
+}
+@media screen and (max-width: 1024px) {
+
+	#svg-menu {
+
+		width : 32%!important;
+		right : -5%!important;
+		top : 0%;
+	}
+
+	#threed-background {
+		top : -18%;
+	}
+
+	#threed-foreground {
+		top : -18%;
+	}
+}
+
+@media screen and (max-width: 800px) {
+	#svg-menu {
+
+		width : 32%!important;
+		right : -5%!important;
+		top : 0%;
+	}
+
+	#threed-background {
+		top : -28%;
+	}
+
+	#threed-foreground {
+		top : -28%;
+	}
+}
+
 @media screen and (max-width: 640px) {
 
 	.site-branding {
@@ -708,23 +838,39 @@ a:active {
 	}
 
 	.site-branding h1 a {
-		font-size: 109%!important;
+		font-size: 106%!important;
 
 	}
 
 	.site-branding h2 {
-		font-size: 98%!important;
+		font-size: 94%!important;
 
 	}
-
 	#svg-menu {
+
 		width : 66%!important;
 		right : -15.5%!important;
+		top : -3%;
 	}
+
+	#threed-background {
+		top : -36%;
+	}
+
+	#threed-foreground {
+		top : -36%;
+	}
+}
 
 	div#content div#primary {
 	/* more padding on top for phones */
-		padding-top: 27%!important;
+		padding-top: 35%!important;
+	}
+
+	body.blog article {
+	float : none!important;
+	width : 100%!important;
+	margin : 1.5% 0!important;
 	}
 
 	.site-main .comment-navigation,
@@ -749,6 +895,23 @@ a:active {
 		width: 50%;
 	}
 }
+
+@media screen and (max-width: 320px) {
+	#svg-menu {
+
+		width : 63%!important;
+		right : -15.5%!important;
+		top : -3%;
+	}
+	#threed-background {
+		top : -36%;
+	}
+
+	#threed-foreground {
+		top : -36%;
+	}
+}
+
 /*--------------------------------------------------------------
 6.0 Accessibility
 --------------------------------------------------------------*/
@@ -871,6 +1034,12 @@ body.blog div#content div#secondary {
 	display: none;
 }
 
+body.blog article {
+	float : left;
+	width : 30%;
+	margin : 0 1.5%;
+	height : 42vh;
+}
 body.blog .hentry .entry-content, body.archive .hentry .entry-content {
 	display : none;
 }
@@ -900,7 +1069,7 @@ body.blog .hentry .entry-content, body.archive .hentry .entry-content {
 }
 
 .hentry, nav.post-navigation, div.comments-area {
-	margin : 0 0 3.5% 0; /* 0 0 1.5em */*/
+	margin : 0 0 3.5% 0; /* 0 0 1.5em */
 
 }
 
@@ -937,12 +1106,17 @@ body.blog .hentry p {
  	font-size : 81%;
 }
 
+.entry-meta span {
+	display : block;
+}
+
 .entry-meta span a, .entry-footer span a {
  	text-decoration: none;
  	color: #61665E;
 }
 
 .post-navigation {
+	display : none;
 	margin-bottom : 8%!important;
 }
 
@@ -1041,6 +1215,10 @@ iframe {
 	background-color: transparent!important;
 	border : none!important;
 	border-radius: 0px!important;
+}
+
+.tiled-gallery {
+	margin-left : 13%!important;
 }
 
 /*--------------------------------------------------------------
