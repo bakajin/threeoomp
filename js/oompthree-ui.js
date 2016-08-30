@@ -35,6 +35,10 @@ var mylarBalloonMixer = new TimelineLite();
 
 var balloonMaterial, balloonMesh;
 
+//raycaster for mouse tracks
+var projector;
+var targetList = [];
+
 //snap svg for the menu
 var paper;
 
@@ -65,19 +69,18 @@ function init() {
 
 		bgScene = new THREE.Scene();
 		//bgScene.background = 0xffffff;
+		//Fog( hex, near, far 
 		bgScene.fog = new THREE.Fog( 0xffffff, 1, 200);
 
 		fgScene = new THREE.Scene();
 		//fgScene.background = 0xffffff;
-		//Fog( hex, near, far )
-		//scene.fog = new THREE.Fog( 0xffffff, 1, 450);
 		
 
 	//hemisphereLight = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
 		//scene.add( hemisphereLight );
 		ambientLight = new THREE.AmbientLight( 0x000000 );
 		directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
-		directionalLight.position.set( 10, 90, 10 );
+		directionalLight.position.set( 10, 90, -30 );
 		
 
 		bgScene.add( directionalLight );
@@ -171,6 +174,8 @@ function init() {
 
 					} );
 
+					targetList.push(bgOne);
+
 					bgOneVerticalClone = bgOne.clone();
 					bgOneVerticalClone.name = "bg-grid-vertical-clone-1"
 
@@ -237,6 +242,9 @@ function init() {
 					
 
 				bgScene.add(bgTwo);
+
+				targetList.push(bgTwo);
+				
 				bgScene.add(bgTwoVerticalClone);
 
 				}, onProgress, onError );
@@ -266,12 +274,13 @@ function init() {
 
 
 				object.position.y = 0.01;
+			
 				fgScene.add(object);
 
 				}, onProgress, onError );
 
 		var balloonLoader = new THREE.OBJLoader( manager );
-		balloonLoader.load( themePath + '/assets/helium-balloon_2.2.obj', function ( object ) {
+			balloonLoader.load( themePath + '/assets/helium-balloon_2.2.obj', function ( object ) {
 				var sphericalEnvironmentTexture = textureLoader.load(themePath + '/assets/app_hallway-2.jpg');
 					sphericalEnvironmentTexture.mapping = THREE.SphericalReflectionMapping;
 					mylarBalloon.name = "helium-balloon";
@@ -347,44 +356,79 @@ function init() {
 
 				}, onProgress, onError );
 		
-		checkClient();
+		checkClient("load");
+
+		mylarBalloon.position.x = 0; // left to right
+		mylarBalloon.position.y = 10;//moves through the grid
+		mylarBalloon.position.z = 80;//up and down, vertical positive is down negative is up!
 
 		var sizeOffset = 0;
-		var posOffset = -39;
-		if(clientSettings.device == "iPhone" || clientSettings.device == "Android") {
-			console.log("make balloon bigger");
-																				sizeOffset = 1.42;
-																				posOffset = -22;
+		var posOffset = new THREE.Vector3(-60,10,-35);
+		if(clientSettings.device == "iPhone" || clientSettings.device == "Android") {																		
+				switch(clientSettings.orientation) {
+					case "landscape":
+							sizeOffset = 0.26;
+							posOffset.x = -53;
+							posOffset.z = -33;
+
+							mylarBalloon.position.z = 141;
+					break;
+					case "portrait":
+							sizeOffset = 1.16;
+							posOffset.x = -52;
+							posOffset.z = -21;
+					break;
+					default:
+							sizeOffset = 1.16;
+							posOffset.x = -52;
+							posOffset.z = -40;
+					break;
+				}
+																				
 		}
 
 		mylarBalloon.scale.x = 0.81 + sizeOffset;
 		mylarBalloon.scale.y = 0.61 + sizeOffset;
 		mylarBalloon.scale.z = 0.81 + sizeOffset;
 
-		mylarBalloon.position.x = 0; // left to right
-		mylarBalloon.position.y = 10;//moves through the grid
-		mylarBalloon.position.z = 141; //up and down, vertical positive is down negative is up!
-
 		var keyToKey = 1.33;
 		var tweenType = "Power1.easeInOut";
 		//var tweenType = "Power.easeIn";
 		//up to the top in a wavey motion
-		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey * 6), { z : posOffset, ease: Power1.easeOut }, 0);
-		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { x : 12, ease: tweenType, repeat : 3, yoyo : true }, 0);
-		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { y : 12, ease: tweenType, repeat : 3, yoyo : true }, 0);
+			// x y z duration
+		var balloonKeys = new Array();
 
-		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { x : 4, ease: tweenType, repeat : 2, yoyo : true }, (keyToKey * 3) );
-		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { y : 9, ease: tweenType, repeat : 2, yoyo : true }, (keyToKey * 3) );
+			balloonKeys.push ( new THREE.Vector4( 4, 10, 52, 0) );
+			balloonKeys.push ( new THREE.Vector4( -0.43, 9.5, -39.72, 1.93 ) );
+			balloonKeys.push ( new THREE.Vector4( -0.43, 10.5, -40.23, 0.07 ) );
+			balloonKeys.push ( new THREE.Vector4( -4, 9.5, -37.66, 0.17 ) );
+			balloonKeys.push ( new THREE.Vector4( -9, 10.5, -39.89, 0.63 ) );
+			balloonKeys.push ( new THREE.Vector4( -13, 9.5, -37.35, 0.4 ) );
+			balloonKeys.push ( new THREE.Vector4( -22, 10.5, -40.06, 0.4 ) );
+			balloonKeys.push ( new THREE.Vector4( -27, 9.5, -37.90, 0.4 ) );
+			balloonKeys.push ( new THREE.Vector4( -36, 10.5, -40.33, 0.43 ) );
+			balloonKeys.push ( new THREE.Vector4( -41, 9.5, -38.86, 0.4 ) );
+			balloonKeys.push ( new THREE.Vector4( -52, 10.5, -40.06, 0.4 ) );
+			balloonKeys.push ( new THREE.Vector4( -60, 9.5, -37.90, 0.43 ) );
+			balloonKeys.push ( new THREE.Vector4( -61, 10.5, -39.89, 0.4 ) );
 
-		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey * 10 ), { x : -58, ease: tweenType }, (keyToKey * 6) );
+		mylarBalloonMixer.to(mylarBalloon.position, ( 4.6 ), { z : posOffset.z, ease: Power2.easeIn }, 0);
+		mylarBalloonMixer.to(mylarBalloon.position, ( 2.6 ), { x : (posOffset.x + 70), ease: tweenType, repeat : 1, yoyo : true }, 0);
+		mylarBalloonMixer.to(mylarBalloon.position, ( 1 ), { y : 11.26, ease: tweenType, repeat : -1, yoyo : true }, 0);
+
+		
+		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { x : (posOffset.x + 62), ease: tweenType, repeat : 2, yoyo : true }, 4.6 );
+		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { y : 9, ease: tweenType, repeat : 2, yoyo : true }, 4.6 );
+
+		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey * 7 ), { x : posOffset.x, ease: tweenType }, 5.22 );
 		//mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { x : -58, ease: tweenType, repeat : -1, yoyo : true }, ( keyToKey * 6 + keyToKey * 6 ) );
 		
-		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { y : 9, ease: tweenType, repeat : 6, yoyo : true }, ( keyToKey * 3 ) );
+		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { y : 9.74, ease: tweenType, repeat : 6, yoyo : true }, ( keyToKey * 3 ) );
 		//mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { z : -38, ease: tweenType, repeat : 5, yoyo : true }, ( keyToKey * 4 ) );
-		
-		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { x : -57.5, ease: tweenType, repeat : -1, yoyo : true }, ( keyToKey * 15 ) );
+		//turbulizerloops
+		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { x : (posOffset.x - 1.5), ease: tweenType, repeat : -1, yoyo : true }, ( keyToKey * 18 ) );
 		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { y : 11, ease: tweenType, repeat : -1, yoyo : true }, ( keyToKey * 6 ) );
-		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { z : -34.3, ease: tweenType, repeat : -1, yoyo : true }, ( keyToKey * 6 ) );
+		mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey ), { z : (posOffset.z + 1.2), ease: Power2.easeOut, repeat : -1, yoyo : true }, ( 5.22 ) );
 
 	
 		//	mylarBalloonMixer.to(mylarBalloon.position, ( keyToKey * 6 ), { x : -20, y : 10, z : -36, ease: tweenType2 });
@@ -393,16 +437,20 @@ function init() {
 	//	mylarBalloon.rotation.y = 1;
 			fgScene.add(mylarBalloon);
 
+			//targetList.push(mylarBalloon);
 		tanFOV = Math.tan( ( ( Math.PI / 180 ) * camera.fov / 2 ) );
 
 		initWindowHeight = window.innerHeight;
 
 		onWindowResize();
+		
+		projector = new THREE.Projector();
+		document.addEventListener( 'mousemove', onRayCastMouseMouse, false );
 	
 }
 
 function onWindowResize() {
-				checkClient();
+				checkClient("resize");
 				//bgRenderer.setPixelRatio( clientSettings.pixelRatio );
 				//fgRenderer.setPixelRatio( clientSettings.pixelRatio );
 				
@@ -423,58 +471,35 @@ function onWindowResize() {
    			// adjust the FOV
     			camera.fov = ( 360 / Math.PI ) * Math.atan( tanFOV * ( window.innerHeight / initWindowHeight ) );
     			camera.updateProjectionMatrix();
-    			
-    		//	var scaleObj = bgScene.getObjectByName("bg-grid-1",true);
+    			camera.position.y = 130 * widthRatio;//camera.fov * heightRatio//130 * widthRatio; //90 
 
-    			camera.position.y = 130 * widthRatio;//camera.fov * heightRatio//130 * widthRatio; //90    
 				//camera.zoom = 10//camera.fov * widthRatio;
 				interest.position.z = camera.fov / heightRatio - clientSettings.factor; //13
 				camera.position.z = interest.position.z;
 				camera.lookAt(interest.position);
 
+    			bgScene.fog = new THREE.Fog( 0xffffff, 1, (camera.position.y + 101) );   
 				console.log("set camera : ", camera.fov, camera.zoom, camera.position.y, camera.position.z, interest.position.z);
     			console.log("\t\t\t wxh ratios : ", widthRatio, heightRatio, window.innerWidth, window.innerHeight);
-				
-    			//camera.lookAt( bgScene.position );
 
     			bgRenderer.setSize( window.innerWidth, window.innerHeight );
     			fgRenderer.setSize( window.innerWidth, window.innerHeight );
-    			//renderer.render( scene, camera );
+    			
     
 				//seeing as the ratio of the screen wont change lets keep it all 16:9
 			//	var staticWidthRatio = 9 / 16;
 			//	var staticHeightRatio = 16 / 9;
 			//	var camMove = (SCREEN_WIDTH / -130) * widthRatio;
-
-				
-				
-				//camMove /= clientSettings.camZ;
 					
 				//console.log("ratios:: width: " + widthRatio + " height: " + heightRatio, interest.position.z);
-					
-					//interest.position.z = -6 * heightRatio; //-15//20 + -1 * widthRatio; //(SCREEN_WIDTH / 130) * widthRatio//= camMove; //camMove; // -55 + 
 
 					camera.position.z = interest.position.z;
 					camera.lookAt(interest.position);
 
-				//fgRenderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
-				//bgRenderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
-
-				
-			/*	var containerOffset = offsetVal;// offSetVal * widthRatio;
-				console.log("containerOffset: ", containerOffset);
-					containerOffset += "px";
-					jQuery("#threed-background").css("top", containerOffset);
-					jQuery("#threed-foreground").css("top", containerOffset);
-
-
-				var setFeaturedGalleryHeight = jQuery(".featured-gallery").innerWidth() * (3 / 4);//(9 / 16);
-					jQuery(".featured-gallery").css("height", setFeaturedGalleryHeight);
-			*/	
 
 }
 
-function checkClient() {
+function checkClient(phase) {
 
 		var uA = navigator.userAgent;
 		
@@ -513,19 +538,19 @@ function checkClient() {
 								if(SCREEN_WIDTH >= 640) {
 									//
 									console.log("640+");
-									fac = 10;
+									fac = 6;
 								
 								}
 								
 								if(SCREEN_WIDTH >= 800) {
 									console.log("800+");
-									fac = 11;
+									fac = 7;
 								}
 									
 								
 								if(SCREEN_WIDTH >= 1024) {
 									console.log("1024+");
-									fac = 11;
+									fac = 12;
 								}
 
 								if(SCREEN_WIDTH >= 1280) {
@@ -566,6 +591,71 @@ function checkClient() {
 			//portrait
 			console.log("something portrait like");
 			fac = 0;
+			if(SCREEN_WIDTH >= 320) {
+									//iphone 4s in landscape
+									console.log("320+");
+									fac = 8;
+								
+								}
+
+								if(SCREEN_WIDTH >= 480) {
+									
+									console.log("480+");
+									fac = 9;
+								}
+								
+								if(SCREEN_WIDTH >= 640) {
+									//
+									console.log("640+");
+									fac = 6;
+								
+								}
+								
+								if(SCREEN_WIDTH >= 800) {
+									console.log("800+");
+									fac = 7;
+								}
+									
+								
+								if(SCREEN_WIDTH >= 1024) {
+									console.log("1024+");
+									fac = 12;
+								}
+
+								if(SCREEN_WIDTH >= 1280) {
+									console.log("1280+");
+									fac = 12;
+								}
+
+								if(SCREEN_WIDTH >= 1366) {
+									console.log("macbookpro 13 retina");
+									console.log("1366+");
+									fac = 14;
+									
+								}
+									
+								if(SCREEN_WIDTH >= 1440) {
+									console.log("macbookpro 15 1440+");
+									fac = 14;
+									
+								}
+								if(SCREEN_WIDTH >= 1600) {
+									console.log("1600+");
+									fac = 14;
+								}
+
+								if(SCREEN_WIDTH >= 1920) {
+									console.log("1920+");
+									fac = 15;
+									
+								}
+
+								if(SCREEN_WIDTH >= 2560) {
+									console.log("macbookpro 15 retina 2560+");
+
+									fac = 11;
+									
+								}
 		}
 
 		//lets check for safari first, because chrome hold double values (Chrome and safari)
@@ -630,12 +720,27 @@ function checkClient() {
 									clientSettings.orientation = "portrait";
 									clientSettings.factor = 30;
 					}
+					if(SCREEN_WIDTH == 480 && SCREEN_HEIGHT == 320) {
+									//iphone 4s in landscape
+									console.log("iphone4");
+									clientSettings.version = 4;
+									clientSettings.orientation = "landscape";
+									clientSettings.factor = 36;
+					}
 					if(SCREEN_WIDTH == 320 && SCREEN_HEIGHT == 568) {
 									//iphone 5s in portrait
 									console.log("iphone5 portrait ");
 									clientSettings.version = 5;
 									clientSettings.orientation = "portrait";
-									clientSettings.factor = 26;
+									clientSettings.factor = 19;
+									
+					}
+					if(SCREEN_WIDTH == 568 && SCREEN_HEIGHT == 320) {
+									//iphone 5s in landscape
+									console.log("iphone5 landscape ");
+									clientSettings.version = 5;
+									clientSettings.orientation = "landscape";
+									clientSettings.factor = 36;
 									
 					}
 					if(SCREEN_WIDTH == 375 && SCREEN_HEIGHT == 667) {
@@ -643,7 +748,15 @@ function checkClient() {
 									console.log("iphone6s");
 									clientSettings.version = 6;
 									clientSettings.orientation = "portrait";
-									clientSettings.factor = 26;
+									clientSettings.factor = 18;
+									
+					}
+					if(SCREEN_WIDTH == 667 && SCREEN_HEIGHT == 375) {
+									//iphone 6s in landscape
+									console.log("iphone6s");
+									clientSettings.version = 6;
+									clientSettings.orientation = "landscape";
+									clientSettings.factor = 37;
 									
 					}
 					if(SCREEN_WIDTH >= 414 && SCREEN_HEIGHT == 736) {
@@ -652,6 +765,14 @@ function checkClient() {
 									clientSettings.version = 6.6;
 									clientSettings.orientation = "portrait";
 									clientSettings.factor = 26;
+									
+					}
+					if(SCREEN_WIDTH >= 736 && SCREEN_HEIGHT == 414) {
+									//iphone 6s+ in landscape
+									console.log("iphone6s +");
+									clientSettings.version = 6.6;
+									clientSettings.orientation = "landscape";
+									clientSettings.factor = 38;
 									
 					}
 			}
@@ -666,6 +787,31 @@ function checkClient() {
 							
 
 				//
+}
+
+function onRayCastMouseMouse(event) {
+	console.log(event);
+
+	var mouse = { x : 0, y : 0 };
+		mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+		mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+	var mouseVector = new THREE.Vector3(mouse.x, mouse.y, 1);
+		
+		projector.unprojectVector( mouseVector, camera );
+
+	var mouseRay = new THREE.Raycaster( camera.position, mouseVector.sub(camera.position).normalize() );
+
+	var intersects = mouseRay.intersectObjects( targetList );
+
+	// if there is one (or more) intersections
+	if ( intersects.length > 0 )
+	{
+		console.log("Hit @ " + toString( intersects[0].point ) );
+		// change the color of the closest face.
+		//intersects[ 0 ].face.color.setRGB( 0.8 * Math.random() + 0.2, 0, 0 ); 
+		//intersects[ 0 ].object.geometry.colorsNeedUpdate = true;
+	}
 }
 
 function animate() {

@@ -839,7 +839,7 @@ a:active {
 @media screen and (max-width: 640px) {
 
 	.site-branding {
-		left: 25%!important;
+		left: 31%!important;
 		/*top: 7%!important;*/
 		line-height: 1.2em!important;
 	}
@@ -1030,8 +1030,8 @@ a:active {
 
 div#content #primary {
 	/* turning off widgets and comments */
-	padding-top: 19%;
-	padding : 19% 13% 0% 13%;
+	padding-top: 22%;
+	padding : 22% 13% 0% 13%;
 }
 
 div#content div#secondary {
@@ -1044,7 +1044,7 @@ body.blog div#content div#secondary {
 	display: none;
 }
 
-body.blog article {
+body.blog article, body.archive article {
 	float : left;
 	width : 30%;
 	margin : 0 1.5%;
@@ -1226,6 +1226,10 @@ iframe {
 	background-color: transparent!important;
 	border : none!important;
 	border-radius: 0px!important;
+}
+
+.slideshow-slide {
+	background-color: transparent!important;
 }
 
 .tiled-gallery {

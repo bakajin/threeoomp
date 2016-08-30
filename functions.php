@@ -97,6 +97,10 @@ function oompthree_scripts() {
 	//wp_enqueue_script( 'oompthree-navigation', get_template_directory_uri() . '/js/navigation.js', array(), '20120206', true );
 	wp_register_script('jQuery', 'https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js');
 	wp_enqueue_script('jQuery');
+	wp_register_script('jQueryMigrate', 'https://code.jquery.com/jquery-migrate-3.0.0.js');
+	wp_enqueue_script('jQueryMigrate');
+	
+
 
 	wp_enqueue_script( 'oompthree-skip-link-focus-fix', get_template_directory_uri() . '/js/skip-link-focus-fix.js', array(), '20130115', true );
 
@@ -121,6 +125,9 @@ function oompthree_custom_scripts() {
 	// loader script for threejs obj
 	wp_register_script('loader-obj', get_template_directory_uri() . '/js/loaders/OBJLoader.js');
 	wp_enqueue_script('loader-obj');
+	
+	wp_register_script('projector', get_template_directory_uri() . '/js/renderers/Projector.js');
+	wp_enqueue_script('projector');
 	
 	// snap svg for rendering the menu
 	wp_register_script('snap-svg', get_template_directory_uri() . '/js/snap.svg-min.js');
