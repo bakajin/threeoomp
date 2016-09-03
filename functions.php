@@ -125,10 +125,10 @@ function oompthree_custom_scripts() {
 	// loader script for threejs obj
 	wp_register_script('loader-obj', get_template_directory_uri() . '/js/loaders/OBJLoader.js');
 	wp_enqueue_script('loader-obj');
-	
+	/*
 	wp_register_script('projector', get_template_directory_uri() . '/js/renderers/Projector.js');
 	wp_enqueue_script('projector');
-	
+	*/
 	// snap svg for rendering the menu
 	wp_register_script('snap-svg', get_template_directory_uri() . '/js/snap.svg-min.js');
 	wp_enqueue_script('snap-svg');

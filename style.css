@@ -1047,8 +1047,10 @@ body.blog div#content div#secondary {
 body.blog article, body.archive article {
 	float : left;
 	width : 30%;
-	margin : 0 1.5%;
+	margin : 0 1.5% 0.75% 1.5%;
 	height : 46vh;
+	padding : 0.5%;
+	background-color: rgba(255,255,255,0.61)
 }
 body.blog .hentry .entry-content, body.archive .hentry .entry-content {
 	display : none;

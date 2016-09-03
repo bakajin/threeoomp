@@ -1,5 +1,6 @@
 /* 
 	OOMPthree function file
+	using THREE JS version r79
 */
 
 /* globals */
@@ -36,7 +37,8 @@ var mylarBalloonMixer = new TimelineLite();
 var balloonMaterial, balloonMesh;
 
 //raycaster for mouse tracks
-var projector;
+var mouse, raycaster;//projector;
+//var projector;
 var targetList = [];
 
 //snap svg for the menu
@@ -123,7 +125,6 @@ function init() {
 	var bgTwo;
 	var bgTwoVerticalClone;
 	
-	//environment map ballon (for reflectivity)
 	
 	// model balloon
 		axis = new THREE.AxisHelper( 10 );
@@ -133,17 +134,6 @@ function init() {
 		
 		bgScene.add( axis );
 
-	//renderer = new THREE.WebGLRenderer( { alpha: true, antialias : true } );
-
-	/* 
-	
-	renderer.setPixelRatio( window.devicePixelRatio );
-	renderer.setSize( window.innerWidth, window.innerHeight );
-	
-	*/
-	
-	//renderer.setSize( window.innerWidth, window.innerHeight );
-	//foregroundView.appendChild( renderer.domElement );
 	
 //build the rest of the scene
 	// model background
@@ -392,27 +382,78 @@ function init() {
 		mylarBalloon.scale.z = 0.81 + sizeOffset;
 
 		var keyToKey = 1.33;
-		var tweenType = "Power1.easeInOut";
+		var tweenType =  "Power0.easeNone"; //"Power1.easeInOut";
 		//var tweenType = "Power.easeIn";
 		//up to the top in a wavey motion
-			// x y z duration
-		var balloonKeys = new Array();
+			// x y z duration (set as a frame! based on 30fps)
+		var balloonKeys = new Object();
+			balloonKeys.xValues = new Array();
+			// value / frame (30fps base!)
+			balloonKeys.xValues.push ( new THREE.Vector2( -0.5989, 1) );
+			balloonKeys.xValues.push ( new THREE.Vector2( -0.1686, 32) );
+			balloonKeys.xValues.push ( new THREE.Vector2( -0.0978, 47) );
+			balloonKeys.xValues.push ( new THREE.Vector2( -0.0686, 55) );
+			balloonKeys.xValues.push ( new THREE.Vector2( -1.5419, 63) );
+			balloonKeys.xValues.push ( new THREE.Vector2( -0.0686, 78) );
+			balloonKeys.xValues.push ( new THREE.Vector2( -31.9456, 94) );
+			balloonKeys.xValues.push ( new THREE.Vector2( -52.0519, 125) );
+			balloonKeys.xValues.push ( new THREE.Vector2( -59.2, 140) );
+			balloonKeys.xValues.push ( new THREE.Vector2( -62.4701, 148) );
+			balloonKeys.xValues.push ( new THREE.Vector2( -62.0017, 156) );
+			
+			balloonKeys.zValues = new Array();
+			balloonKeys.zValues.push ( new THREE.Vector2( 252.778, 1) );
+			balloonKeys.zValues.push ( new THREE.Vector2( 205.174, 2) );
+			balloonKeys.zValues.push ( new THREE.Vector2( 186.289, 3) );
+			balloonKeys.zValues.push ( new THREE.Vector2( 172.132, 4) );
+			balloonKeys.zValues.push ( new THREE.Vector2( 133.049, 8) );
+			balloonKeys.zValues.push ( new THREE.Vector2( 84.357, 16) );
+			balloonKeys.zValues.push ( new THREE.Vector2( 24.373, 32) );
+			balloonKeys.zValues.push ( new THREE.Vector2( -13.353, 47) );
+			balloonKeys.zValues.push ( new THREE.Vector2( -29.414, 55) );
+			balloonKeys.zValues.push ( new THREE.Vector2( -36.657, 59) );
+			balloonKeys.zValues.push ( new THREE.Vector2( -38.927, 61) );
+			balloonKeys.zValues.push ( new THREE.Vector2( -36.237, 63) );
+			balloonKeys.zValues.push ( new THREE.Vector2( -36.455, 78) );
+			balloonKeys.zValues.push ( new THREE.Vector2( -38.142, 82) );
+			balloonKeys.zValues.push ( new THREE.Vector2( -39.152, 86) );
+			balloonKeys.zValues.push ( new THREE.Vector2( -36.432, 90) );
+			balloonKeys.zValues.push ( new THREE.Vector2( -36.732, 94) );
+			balloonKeys.zValues.push ( new THREE.Vector2( -38.435, 101) );
+			balloonKeys.zValues.push ( new THREE.Vector2( -39.529, 105) );
+			balloonKeys.zValues.push ( new THREE.Vector2( -38.427, 109) );
+			balloonKeys.zValues.push ( new THREE.Vector2( -38.0196, 117) );
+			balloonKeys.zValues.push ( new THREE.Vector2( -38.7448, 125) );
+			balloonKeys.zValues.push ( new THREE.Vector2( -38.4718, 140) );
+			balloonKeys.zValues.push ( new THREE.Vector2( -39.5246, 156) );
+			
+			var duration, insertion;
+			/*for(x = 0; x < balloonKeys.xValues.length; x++) {
+				// divide frame by 30 for conversion of duration
+					if(x < 1) {
+						duration = 0//;balloonKeys.xValues[x].y / 30;
+					} else {
+						duration = (balloonKeys.xValues[x].y - balloonKeys.xValues[x -1].y) / 30;	
+					}
+					
+				 	insertion = balloonKeys.xValues[x].y / 30;
 
-			balloonKeys.push ( new THREE.Vector4( 4, 10, 52, 0) );
-			balloonKeys.push ( new THREE.Vector4( -0.43, 9.5, -39.72, 1.93 ) );
-			balloonKeys.push ( new THREE.Vector4( -0.43, 10.5, -40.23, 0.07 ) );
-			balloonKeys.push ( new THREE.Vector4( -4, 9.5, -37.66, 0.17 ) );
-			balloonKeys.push ( new THREE.Vector4( -9, 10.5, -39.89, 0.63 ) );
-			balloonKeys.push ( new THREE.Vector4( -13, 9.5, -37.35, 0.4 ) );
-			balloonKeys.push ( new THREE.Vector4( -22, 10.5, -40.06, 0.4 ) );
-			balloonKeys.push ( new THREE.Vector4( -27, 9.5, -37.90, 0.4 ) );
-			balloonKeys.push ( new THREE.Vector4( -36, 10.5, -40.33, 0.43 ) );
-			balloonKeys.push ( new THREE.Vector4( -41, 9.5, -38.86, 0.4 ) );
-			balloonKeys.push ( new THREE.Vector4( -52, 10.5, -40.06, 0.4 ) );
-			balloonKeys.push ( new THREE.Vector4( -60, 9.5, -37.90, 0.43 ) );
-			balloonKeys.push ( new THREE.Vector4( -61, 10.5, -39.89, 0.4 ) );
+					mylarBalloonMixer.to(mylarBalloon.position, duration, { x : (balloonKeys.xValues[x].x ), ease: tweenType, }, insertion);
+			}
 
-		mylarBalloonMixer.to(mylarBalloon.position, ( 4.6 ), { z : posOffset.z, ease: Power2.easeIn }, 0);
+			for(z = 0; z < balloonKeys.zValues.length; z++) {
+					if(z < 1) {
+						duration = 0;//balloonKeys.zValues[z].y / 30;
+					} else {
+						duration = (balloonKeys.zValues[z].y - balloonKeys.zValues[z -1].y) / 30;	
+					}
+					
+				 	insertion = balloonKeys.zValues[z].y / 30;
+
+					mylarBalloonMixer.to(mylarBalloon.position, duration, { z : (balloonKeys.zValues[z].x ), ease: tweenType, }, insertion);
+			}*/
+		
+		mylarBalloonMixer.to(mylarBalloon.position, ( 4.9 ), { z : posOffset.z, ease: Power2.easeIn }, 0);
 		mylarBalloonMixer.to(mylarBalloon.position, ( 2.6 ), { x : (posOffset.x + 70), ease: tweenType, repeat : 1, yoyo : true }, 0);
 		mylarBalloonMixer.to(mylarBalloon.position, ( 1 ), { y : 11.26, ease: tweenType, repeat : -1, yoyo : true }, 0);
 
@@ -435,6 +476,8 @@ function init() {
 		
 			mylarBalloonMixer.play();
 	//	mylarBalloon.rotation.y = 1;
+			targetList.push(mylarBalloon);
+			
 			fgScene.add(mylarBalloon);
 
 			//targetList.push(mylarBalloon);
@@ -444,7 +487,8 @@ function init() {
 
 		onWindowResize();
 		
-		projector = new THREE.Projector();
+		raycaster = new THREE.Raycaster();//Projector();
+		mouse = new THREE.Vector2();//{ x : 0, y : 0 };
 		document.addEventListener( 'mousemove', onRayCastMouseMouse, false );
 	
 }
@@ -683,8 +727,8 @@ function checkClient(phase) {
 			clientSettings.factor = 20;
 		}
 
-		if(uA.search("Internet Explorer") != -1) {
-			console.log("Explorer");
+		if(uA.search("MSIE") != -1) {
+			console.log("IExplorer");
 			clientSettings.browser = "IE";
 			clientSettings.factor = 20;
 		}
@@ -699,6 +743,12 @@ function checkClient(phase) {
 		if(uA.search("Intel Mac") != -1) {
 			console.log("mac");
 			clientSettings.device = "Mac";
+			clientSettings.factor = 30;
+		}
+
+		if(uA.search("Windows NT") != -1) {
+			console.log("windows");
+			clientSettings.device = "Windows";
 			clientSettings.factor = 30;
 		}
 
@@ -792,30 +842,31 @@ function checkClient(phase) {
 function onRayCastMouseMouse(event) {
 	console.log(event);
 
-	var mouse = { x : 0, y : 0 };
 		mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
 		mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 
-	var mouseVector = new THREE.Vector3(mouse.x, mouse.y, 1);
-		
-		projector.unprojectVector( mouseVector, camera );
+		//carefull the up vector is y
+		raycaster.setFromCamera( mouse, camera );
 
-	var mouseRay = new THREE.Raycaster( camera.position, mouseVector.sub(camera.position).normalize() );
-
-	var intersects = mouseRay.intersectObjects( targetList );
-
+	var intersects = raycaster.intersectObjects( targetList, true );
 	// if there is one (or more) intersections
-	if ( intersects.length > 0 )
-	{
-		console.log("Hit @ " + toString( intersects[0].point ) );
-		// change the color of the closest face.
-		//intersects[ 0 ].face.color.setRGB( 0.8 * Math.random() + 0.2, 0, 0 ); 
-		//intersects[ 0 ].object.geometry.colorsNeedUpdate = true;
+		console.log(":::: ", intersects[0])
+	
+	for ( var i = 0; i < intersects.length; i++ ) {
+
+		//intersects[ i ].object.material.color.set( 0xff0000 );
+		console.log( "Hit @ " + intersects[0]["distance"] );
+		console.log( "point @ " + intersects[0].point.x, intersects[0].point.y, intersects[0].point.z );
+		console.log( "face @ " + intersects[0].face.a, intersects[0].face.b, intersects[0].face.c );
+		
+	
 	}
+	
 }
 
 function animate() {
 	//console.log("animate");
+
 	//animate stuff
 	requestAnimationFrame( animate );
     //mesh.rotation.y += 0.02;
